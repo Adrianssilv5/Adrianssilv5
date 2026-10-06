@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Model lab</title>
+<style>html,body{margin:0;background:#000}canvas{display:block}</style></head><body>
+<canvas id="gl" width="1920" height="1080"></canvas>
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { makeRenderer, studioEnvironment } from './js/stage.js';
+import { makePod, makeBand, makeExploded, makeCharger } from './js/models.js';
+const r = makeRenderer(document.getElementById('gl'));
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#050505');
+scene.environment = studioEnvironment(r);
+const cam = new THREE.PerspectiveCamera(22, 16 / 9, 0.1, 200);
+const key = new THREE.DirectionalLight('#ffffff', 1.2); key.position.set(3, 6, 4); scene.add(key);
+scene.add(new THREE.AmbientLight('#ffffff', 0.15));
+const view = new URLSearchParams(location.search).get('view') || 'pod';
+let root;
+if (view === 'pod') { const p = makePod(); root = p.group; p.setLED('#ffffff', 1); cam.position.set(4.5, 3.2, 7.5); }
+if (view === 'under') { const p = makePod(); root = p.group; ['hr','red','ir','det'].forEach(k => p.setEmit(k, 1)); root.rotation.x = Math.PI; cam.position.set(2.5, 4.5, 5.5); }
+if (view === 'band') { const b = makeBand('berry'); const p = makePod(); b.seat.add(p.group); root = b.group; cam.position.set(9, 4, 12); }
+if (view === 'bands') { root = new THREE.Group(); ['obsidian','fog','lavender','berry'].forEach((k, i) => { const b = makeBand(k); b.group.position.x = (i - 1.5) * 2.6; b.group.rotation.y = 0.5; root.add(b.group); }); cam.position.set(6, 6, 18); }
+if (view === 'exploded') { const e = makeExploded(); root = e.group; e.parts.forEach((p, i) => p.mesh.position.y = p.rest + (2.5 - i) * 0.55); cam.position.set(5, 3.5, 7); }
+if (view === 'charger') { root = makeCharger(); cam.position.set(6, 5, 9); }
+scene.add(root); cam.lookAt(0, 0, 0);
+scene.environmentRotation = new THREE.Euler(0, +(new URLSearchParams(location.search).get('rot') || 0), 0);
+r.render(scene, cam);
+window.ready = true;
+</script></body></html>

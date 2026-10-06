@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fitbit Air, a concept film</title>
+<style>
+  @font-face { font-family: "Inter"; src: url("fonts/Inter.woff2") format("woff2"); font-weight: 100 900; }
+  @font-face { font-family: "Inter Tight"; src: url("fonts/InterTight.woff2") format("woff2"); font-weight: 100 900; }
+  html, body { margin: 0; height: 100%; background: #000; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  #stage { position: relative; width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; }
+  #stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  body.capture #stage { width: 1920px; height: 1080px; max-width: none; max-height: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl" width="1920" height="1080"></canvas>
+  <canvas id="ui" width="1920" height="1080"></canvas>
+</div>
+<script>if (new URLSearchParams(location.search).has('capture')) document.body.classList.add('capture');</script>
+<script type="importmap">{ "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/jsm/" } }</script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
