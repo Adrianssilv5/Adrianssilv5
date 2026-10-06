@@ -87,7 +87,8 @@ bars(20, 26, (t, c) => {
   inst.bass(t, ROOT[c], BEAT * 1.6, 0.18); inst.bass(t + BEAT * 2, ROOT[c], BEAT * 1.6, 0.16);
   inst.pad(t, CH[c], BAR, 0.022);
 });
-[24.15, 24.6, 25.05, 25.5].forEach((t) => inst.bell(t, 88, 0.05));
+// rhythm scan (20-22): a soft ping each time the scan line measures a beat-to-beat interval
+[20.39, 20.6, 20.8, 21.0, 21.21, 21.42, 21.63].forEach((t) => inst.bell(t, 88, 0.045));
 // 26-34: night. drums out, pads, shimmer, breathing swells
 bars(26, 34, (t, c) => { inst.pad(t, CH[c].map((m) => m - 12), BAR, 0.035, 3); inst.bass(t, ROOT[c] - 12, BAR * 0.95, 0.1); });
 [26.5, 27.5, 28.5, 29.5].forEach((t, i) => inst.bell(t, [86, 89, 93, 91][i], 0.035, (i % 2) - 0.5));
@@ -97,19 +98,21 @@ bars(26, 34, (t, c) => { inst.pad(t, CH[c].map((m) => m - 12), BAR, 0.035, 3); i
 inst.pad(34, [57, 60, 65], 4, 0.03); inst.pad(36, [55, 60, 64], 2, 0.03);
 [35.0, 35.5, 36.0].forEach((t) => fx.haptic(t));
 fx.knock(36.75); fx.knock(37.0); fx.riser(36.2, 1.55, 0.06);
-// 38-42: second DROP. full groove with claps, a pluck per activity glyph, chime when the ring closes
-bars(38, 42, (t, c) => {
+// 38-42: readiness count and the coach conversation. thinner groove, keystrokes
+bars(38, 42, (t, c) => { inst.kick(t, 0.3); inst.kick(t + 2 * BEAT, 0.25); inst.pad(t, CH[c], BAR, 0.03); inst.bass(t, ROOT[c], BAR * 0.9, 0.13); for (let k = 0; k < 4; k++) inst.piano(t + k * BEAT, MOTIF[c][k], 0.06, (k % 2) - 0.5, 0.6); });
+for (let k = 0; k < 12; k++) inst.blip(38.1 + k * 0.09, 64 + k, 0.025);
+inst.blip(39.75, 79, 0.06); fx.type(39.9, 8, 0.04); inst.blip(40.2, 84, 0.05); fx.type(40.2, 14, 0.043);
+// 42-46: second DROP on the cut to motion. full groove with claps, a pluck per activity glyph, chime when the ring closes
+bars(42, 46, (t, c) => {
   for (let b = 0; b < 4; b++) inst.kick(t + b * BEAT, 0.42);
   inst.clap(t + BEAT); inst.clap(t + 3 * BEAT);
   for (let k = 0; k < 8; k++) inst.hat(t + k * E8 + E8 / 2, 0.04);
   for (let k = 0; k < 8; k++) inst.bass(t + k * E8, ROOT[c] + (k % 2 ? 12 : 0), E8 * 0.7, 0.15);
   inst.pad(t, CH[c], BAR, 0.024);
 });
-[38.35, 38.75, 39.15, 39.55, 39.95].forEach((t, i) => inst.pluck(t, [74, 77, 81, 84, 86][i], 0.09));
-[84, 88, 91, 96].forEach((m, k) => inst.bell(41.45 + k * 0.06, m, 0.05, (k - 1.5) * 0.3));
-// 42-46: readiness count and the coach conversation. thinner groove, keystrokes
-bars(42, 46, (t, c) => { inst.kick(t, 0.3); inst.kick(t + 2 * BEAT, 0.25); inst.pad(t, CH[c], BAR, 0.03); inst.bass(t, ROOT[c], BAR * 0.9, 0.13); for (let k = 0; k < 4; k++) inst.piano(t + k * BEAT, MOTIF[c][k], 0.06, (k % 2) - 0.5, 0.6); });
-fx.type(42.1, 20, 0.05); inst.blip(43.75, 79, 0.06); fx.type(44.0, 8, 0.04); inst.blip(44.45, 84, 0.05); fx.type(44.5, 18, 0.045);
+fx.whoosh(41.6, 0.5, 0.08);
+[42.35, 42.75, 43.15, 43.55, 43.95].forEach((t, i) => inst.pluck(t, [74, 77, 81, 84, 86][i], 0.09));
+[84, 88, 91, 96].forEach((m, k) => inst.bell(45.45 + k * 0.06, m, 0.05, (k - 1.5) * 0.3));
 // 46-50: seven days. driving eighths, a tick per day, rain, underwater
 bars(46, 50, (t, c) => { for (let b = 0; b < 4; b++) inst.kick(t + b * BEAT, 0.38); inst.clap(t + BEAT, 0.12); inst.clap(t + 3 * BEAT, 0.12); for (let k = 0; k < 8; k++) inst.bass(t + k * E8, ROOT[c] + (k % 2 ? 12 : 0), E8 * 0.7, 0.15); inst.pad(t, CH[c], BAR, 0.024); });
 for (let d = 0; d < 7; d++) inst.rim(46 + d * BEAT, 0.07);

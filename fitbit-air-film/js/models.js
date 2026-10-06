@@ -97,7 +97,7 @@ function tex() {
 }
 
 // ---------- the pod ----------
-export const PODMAT = () => new THREE.MeshPhysicalMaterial({ color: '#1a1a1e', roughness: 0.38, metalness: 0.0, clearcoat: 0.45, clearcoatRoughness: 0.28, sheen: 0.3, sheenColor: new THREE.Color('#6a6a78'), sheenRoughness: 0.55 });
+export const PODMAT = () => new THREE.MeshPhysicalMaterial({ color: '#18181c', roughness: 0.48, metalness: 0.0, clearcoat: 0.3, clearcoatRoughness: 0.35, sheen: 0.25, sheenColor: new THREE.Color('#6a6a78'), sheenRoughness: 0.55 });
 
 export function makePod() {
   const group = new THREE.Group();
@@ -124,15 +124,16 @@ export function makePod() {
   const pinMat = new THREE.MeshStandardMaterial({ color: '#C9CCD2', metalness: 1, roughness: 0.25 });
   [-1.05, 1.05].forEach((x) => { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.02, 24), pinMat); p.position.set(x, -POD.bottom * 0.8 - 0.01, 0); group.add(p); });
   // status LED on the left side
-  const ledMat = new THREE.MeshBasicMaterial({ color: '#2a2a2e' });
-  const led = new THREE.Mesh(new THREE.CircleGeometry(0.045, 24), ledMat);
-  led.position.set(-0.55, 0.04, -POD.b * 0.985); led.rotation.y = Math.PI;
+  const ledMat = new THREE.MeshBasicMaterial({ color: '#1a1a1e' });
+  const led = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 8), ledMat);
+  led.scale.set(1, 1, 0.3); led.position.set(-0.55, 0.04, -POD.b * 1.005);
   group.add(led);
   const ledGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex().glow, color: '#ffffff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
-  ledGlow.position.copy(led.position).add(new THREE.Vector3(0, 0, -0.05)); ledGlow.scale.setScalar(0.9);
+  ledGlow.position.set(-0.55, 0.04, -(POD.b + 0.12)); ledGlow.scale.setScalar(0.9);
   group.add(ledGlow);
   const setLED = (color, k) => {
-    ledMat.color.set(color).multiplyScalar(0.25 + 0.75 * k);
+    ledMat.color.set('#1a1a1e').lerp(new THREE.Color(color), k);
+    led.visible = k > 0.02;
     ledGlow.material.color.set(color); ledGlow.material.opacity = k;
   };
   const setEmit = (key, k) => [].concat(emitters[key]).forEach((m) => { m.material.color.set('#111114').lerp(m.userData.on, k); });
@@ -144,6 +145,7 @@ export function makePod() {
 export function makeExploded() {
   const g = new THREE.Group();
   const shellMat = PODMAT();
+  shellMat.color.set('#0f0f12'); shellMat.roughness = 0.6; shellMat.clearcoat = 0.15; shellMat.sheen = 0;
   const top = new THREE.Mesh(superellipsoid({ ...POD, v0: 0.02, v1: Math.PI / 2 }), shellMat); top.material.side = THREE.DoubleSide;
   const bottom = new THREE.Mesh(superellipsoid({ ...POD, v0: -Math.PI / 2, v1: -0.02 }), shellMat.clone()); bottom.material.side = THREE.DoubleSide;
   const motor = new THREE.Group();
@@ -210,7 +212,7 @@ export const BANDS = {
 };
 // A closed band loop as if around an invisible wrist; the pod sits on the INSIDE at the top.
 // Loop lies in the Y-Z plane, band width along X.
-export function makeBand(key, { ry = 2.15, rz = 2.85, width = 1.82, thick = 0.13 } = {}) {
+export function makeBand(key, { ry = 2.15, rz = 2.85, width = 1.82, thick = 0.2 } = {}) {
   const spec = BANDS[key];
   const T = tex();
   const SEG = 220, ACROSS = 10;
@@ -249,7 +251,7 @@ export function makeBand(key, { ry = 2.15, rz = 2.85, width = 1.82, thick = 0.13
   }
   for (let i = 0; i < SEG; i++) for (let k = 0; k < M; k++) {
     const a0 = i * (M + 1) + k, b0 = a0 + M + 1;
-    idx.push(a0, a0 + 1, b0, b0, a0 + 1, b0 + 1);
+    idx.push(a0, b0, a0 + 1, b0, b0 + 1, a0 + 1);
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
@@ -258,9 +260,9 @@ export function makeBand(key, { ry = 2.15, rz = 2.85, width = 1.82, thick = 0.13
   geo.setIndex(idx);
   let mat;
   if (spec.family === 'loop') {
-    const n = T.weave.normal.clone(); n.repeat.set(1.6, 0.55); n.needsUpdate = true;
-    const ao = T.weave.ao.clone(); ao.repeat.set(1.6, 0.55); ao.needsUpdate = true;
-    mat = new THREE.MeshPhysicalMaterial({ color: spec.color, map: ao, normalMap: n, normalScale: new THREE.Vector2(1.4, 1.4), roughness: 0.95, sheen: 0.35, sheenColor: new THREE.Color(spec.color).lerp(new THREE.Color('#ffffff'), 0.25), sheenRoughness: 0.6 });
+    const n = T.weave.normal.clone(); n.repeat.set(3.2, 1.1); n.anisotropy = 8; n.needsUpdate = true;
+    const ao = T.weave.ao.clone(); ao.repeat.set(3.2, 1.1); ao.anisotropy = 8; ao.needsUpdate = true;
+    mat = new THREE.MeshPhysicalMaterial({ color: spec.color, map: ao, normalMap: n, normalScale: new THREE.Vector2(0.7, 0.7), roughness: 0.95, sheen: 0.35, sheenColor: new THREE.Color(spec.color).lerp(new THREE.Color('#ffffff'), 0.25), sheenRoughness: 0.6 });
   } else if (spec.family === 'active') {
     const n = T.rib.normal.clone(); n.repeat.set(3, 1); n.needsUpdate = true;
     mat = new THREE.MeshPhysicalMaterial({ color: spec.color, normalMap: n, normalScale: new THREE.Vector2(0.25, 0.25), roughness: 0.48, clearcoat: 0.3, clearcoatRoughness: 0.5 });
@@ -273,12 +275,13 @@ export function makeBand(key, { ry = 2.15, rz = 2.85, width = 1.82, thick = 0.13
   if (spec.buckle) {
     // a slim rounded-rectangle loop the strap passes through, placed low on one side of the loop
     const bm = new THREE.MeshStandardMaterial({ color: spec.buckle, metalness: spec.bmetal, roughness: 0.22 });
-    const hw = width / 2 + 0.09, hh = thick / 2 + 0.1, rr = 0.08, pts = [];
+    const hw = width / 2 + 0.12, hh = thick / 2 + 0.1, rr = 0.09, pts = [];
     for (let k = 0; k < 4; k++) {
       const cx = (k === 0 || k === 3 ? 1 : -1) * (hw - rr), cy = (k < 2 ? 1 : -1) * (hh - rr);
       for (let q = 0; q <= 6; q++) { const a = (k * Math.PI) / 2 + (q / 6) * (Math.PI / 2); pts.push(new THREE.Vector3(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, 0)); }
     }
-    const frame = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 80, 0.035, 10, true), bm);
+    const frame = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 80, 0.065, 12, true), bm);
+    frame.scale.z = 0.6;
     const i = Math.round(SEG * 0.68), p = ring[i], q = ring[i + 1];
     const holder = new THREE.Group();
     holder.position.set(0, p[0], p[1]);
@@ -288,7 +291,7 @@ export function makeBand(key, { ry = 2.15, rz = 2.85, width = 1.82, thick = 0.13
   // pod seat: the pod sits inside the loop at the top, long axis along z
   const seat = new THREE.Group();
   seat.position.set(0, ry - thick / 2 - POD.top - 0.02, 0);
-  seat.rotation.y = Math.PI / 2;
+  seat.rotation.y = -Math.PI / 2; // LED edge faces the band's +X side
   group.add(seat);
   return { group, band, seat, mat, spec };
 }
@@ -296,9 +299,11 @@ export function makeBand(key, { ry = 2.15, rz = 2.85, width = 1.82, thick = 0.13
 // ---------- charger ----------
 export function makeCharger() {
   const g = new THREE.Group();
-  const white = new THREE.MeshPhysicalMaterial({ color: '#f4f4f2', roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.2 });
-  const head = new THREE.Mesh(superellipsoid({ a: 1.6, b: 1.05, top: 0.42, bottom: 0.42, m: 2.6, n: 3.2, U: 96, V: 48 }), white);
+  const white = new THREE.MeshPhysicalMaterial({ color: '#f4f4f2', roughness: 0.55, clearcoat: 0.1, clearcoatRoughness: 0.4 });
+  const head = new THREE.Mesh(superellipsoid({ a: 1.6, b: 1.05, top: 0.3, bottom: 0.42, m: 4, n: 6, U: 96, V: 48 }), white);
   g.add(head);
+  const relief = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.13, 0.7, 24), white);
+  relief.rotation.z = Math.PI / 2; relief.position.x = 1.85; g.add(relief);
   const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(1.55, 0, 0), new THREE.Vector3(3.2, -0.2, 0), new THREE.Vector3(5.5, -1.5, 0.8), new THREE.Vector3(8, -3.5, 2.5), new THREE.Vector3(11, -6, 4)]);
   g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 120, 0.11, 16, false), white));
   const pinMat = new THREE.MeshStandardMaterial({ color: '#C9A45C', metalness: 1, roughness: 0.3 });
@@ -306,6 +311,7 @@ export function makeCharger() {
   return g;
 }
 
+export function fabricNormal(rx, ry) { const n = tex().weave.normal.clone(); n.repeat.set(rx, ry); n.needsUpdate = true; return n; }
 export function glowSprite(color = '#ffffff', size = 1, opacity = 1) {
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex().glow, color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false }));
   s.scale.setScalar(size);
