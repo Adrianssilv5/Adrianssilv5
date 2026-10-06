@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biscuit, Graphic Designer</title>
+<style>
+  @font-face { font-family: "Fraunces"; src: url("fonts/Fraunces.woff2") format("woff2"); font-weight: 100 900; }
+  @font-face { font-family: "Space Grotesk"; src: url("fonts/SpaceGrotesk.woff2") format("woff2"); font-weight: 300 700; }
+  :root {
+    --canvas: #F3EBDD;
+    --ink: #2A1A10;
+  }
+  html, body { margin: 0; height: 100%; background: #171310; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  svg#stage { width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; display: block; }
+  body.capture { background: var(--canvas); }
+  body.capture svg#stage { width: 1920px; height: 1080px; max-width: none; max-height: none; }
+  .serif { font-family: "Fraunces", Georgia, serif; }
+  .sans { font-family: "Space Grotesk", "Helvetica Neue", Arial, sans-serif; }
+</style>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="dots" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="16" cy="16" r="1.6" fill="#D9CCB4"/>
+    </pattern>
+    <pattern id="abGrid" width="50" height="50" patternUnits="userSpaceOnUse">
+      <path d="M50 0H0V50" fill="none" stroke="#E6EEFF" stroke-width="1.5"/>
+    </pattern>
+    <radialGradient id="biscuitFill" cx="42%" cy="38%" r="70%">
+      <stop offset="0" stop-color="#F6CD86"/>
+      <stop offset="0.65" stop-color="#E7A852"/>
+      <stop offset="1" stop-color="#C98535"/>
+    </radialGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#3B2416" flood-opacity="0.22"/>
+    </filter>
+    <filter id="uiShadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="#2A1A10" flood-opacity="0.16"/>
+    </filter>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.95  0 0 0 0 0.85  0 0 0 0.55 0"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+    <clipPath id="abClip"><rect width="600" height="750"/></clipPath>
+    <clipPath id="sunKnock"><circle cx="300" cy="272" r="140"/></clipPath>
+    <clipPath id="floodBg"><circle id="floodBgC" r="0"/></clipPath>
+    <clipPath id="floodSun"><circle id="floodSunC" r="0"/></clipPath>
+    <clipPath id="floodW1"><circle id="floodW1C" r="0"/></clipPath>
+    <clipPath id="floodW2"><circle id="floodW2C" r="0"/></clipPath>
+  </defs>
+
+  <!-- Canvas -->
+  <rect width="1920" height="1080" fill="#F3EBDD"/>
+  <rect width="1920" height="1080" fill="url(#dots)" id="dotLayer"/>
+
+  <!-- Top app bar -->
+  <g id="appBar" class="sans">
+    <rect x="0" y="0" width="1920" height="64" fill="#FBF6EC"/>
+    <rect x="0" y="63" width="1920" height="1" fill="#E3D7C2"/>
+    <circle cx="40" cy="32" r="7" fill="#F0533A"/><circle cx="64" cy="32" r="7" fill="#F5B83D"/><circle cx="88" cy="32" r="7" fill="#2BA59B"/>
+    <text x="130" y="38" font-size="17" font-weight="700" fill="#2A1A10">biscuit.studio</text>
+    <text x="268" y="38" font-size="17" font-weight="500" fill="#9A8770">/ Poster_FINAL_v1.fig</text>
+    <text id="zoomLabel" x="1880" y="38" font-size="15" font-weight="500" fill="#9A8770" text-anchor="end">100%</text>
+    <g id="avatars">
+      <circle cx="1772" cy="32" r="16" fill="#E7A852" stroke="#FBF6EC" stroke-width="3"/>
+      <text x="1772" y="38" font-size="15" font-weight="700" fill="#2A1A10" text-anchor="middle">B</text>
+      <g id="clientAvatar" opacity="0">
+        <circle cx="1746" cy="32" r="16" fill="#7C6CF2" stroke="#FBF6EC" stroke-width="3"/>
+        <text x="1746" y="38" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">C</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Tool rail -->
+  <g id="toolRail" transform="translate(236,330)" filter="url(#uiShadow)">
+    <rect x="0" y="0" width="76" height="372" rx="38" fill="#FFFDF8"/>
+    <rect id="toolHi" x="10" y="12" width="56" height="56" rx="28" fill="#2A1A10"/>
+    <!-- move -->
+    <path class="tool" data-i="0" d="M30 24 L30 54 L37 47 L42 58 L47 56 L42 45 L52 45 Z" fill="#2A1A10" stroke-linejoin="round"/>
+    <!-- pen -->
+    <g class="tool" data-i="1" transform="translate(38,112)">
+      <path d="M0 -16 L10 4 L4 14 L-4 14 L-10 4 Z" fill="none" stroke="#2A1A10" stroke-width="3.2" stroke-linejoin="round"/>
+      <circle cx="0" cy="2" r="2.6" fill="#2A1A10"/>
+      <path d="M-5 18 H5" stroke="#2A1A10" stroke-width="3.2" stroke-linecap="round"/>
+    </g>
+    <!-- ellipse -->
+    <circle class="tool" data-i="2" cx="38" cy="186" r="14" fill="none" stroke="#2A1A10" stroke-width="3.2"/>
+    <!-- text -->
+    <text class="tool serif" data-i="3" x="38" y="270" font-size="32" font-weight="800" text-anchor="middle" fill="#2A1A10">T</text>
+    <!-- fill -->
+    <g class="tool" data-i="4" transform="translate(38,334)">
+      <circle r="14" fill="#F0533A"/>
+      <path d="M0 -14 A14 14 0 0 1 14 0 L0 0 Z" fill="#F5B83D"/>
+      <path d="M0 14 A14 14 0 0 1 -14 0 L0 0 Z" fill="#2BA59B"/>
+    </g>
+  </g>
+
+  <!-- Artboard -->
+  <g id="artboardWrap" transform="translate(360,170)">
+    <text id="abLabel" class="sans" x="0" y="-14" font-size="16" font-weight="500" fill="#9A8770">Poster — 600 × 750</text>
+    <g id="artboard">
+      <rect id="abShadowRect" width="600" height="750" fill="#FFFFFF" filter="url(#softShadow)"/>
+      <g clip-path="url(#abClip)">
+        <rect width="600" height="750" fill="#FFFFFF"/>
+        <rect id="abGridRect" width="600" height="750" fill="url(#abGrid)"/>
+
+        <!-- colored layers (revealed by flood clips) -->
+        <rect width="600" height="750" fill="#1D2B4A" clip-path="url(#floodBg)"/>
+        <g id="sunRings" fill="none" stroke="#F5B83D">
+          <circle id="ring1" cx="300" cy="272" r="140" stroke-width="1.5" opacity="0"/>
+          <circle id="ring2" cx="300" cy="272" r="140" stroke="#FFF4E2" stroke-width="3" stroke-dasharray="0.1 11" stroke-linecap="round" opacity="0"/>
+        </g>
+
+        <!-- sun -->
+        <g id="sunGroup">
+          <circle id="sunOutline" cx="300" cy="272" r="0" fill="none" stroke="#C9BBA4" stroke-width="2.5"/>
+          <circle id="sunFill" cx="300" cy="272" r="140" fill="#F5B83D" clip-path="url(#floodSun)"/>
+        </g>
+
+        <!-- stars (polish) -->
+        <g id="stars" fill="#FFF4E2"></g>
+
+        <!-- waves -->
+        <path id="w1Outline" d="M0 650 C160 590 360 730 600 620" fill="none" stroke="#C9BBA4" stroke-width="2.5"/>
+        <path id="w1Fill" d="M0 650 C160 590 360 730 600 620 L600 750 L0 750 Z" fill="#2BA59B" clip-path="url(#floodW1)"/>
+        <path id="w2Outline" d="M0 702 C190 662 400 770 600 690" fill="none" stroke="#C9BBA4" stroke-width="2.5"/>
+        <path id="w2Fill" d="M0 702 C190 662 400 770 600 690 L600 750 L0 750 Z" fill="#F49AC1" clip-path="url(#floodW2)"/>
+
+        <!-- typography -->
+        <g id="typeGroup" class="serif" fill="#FFF4E2" font-weight="900" font-size="112">
+          <g id="line1"></g>
+          <g id="line2"></g>
+        </g>
+        <!-- knockout: the headline turns ink-blue where it crosses the sun -->
+        <g class="serif" fill="#1D2B4A" font-weight="900" font-size="112" clip-path="url(#sunKnock)">
+          <use href="#line1"/>
+          <use href="#line2"/>
+        </g>
+        <g id="subGroup" class="sans" opacity="0">
+          <text x="300" y="598" font-size="15" font-weight="700" letter-spacing="6" fill="#F5B83D" text-anchor="middle">A GRAPHIC DESIGN STUDIO</text>
+        </g>
+        <g id="corners" class="sans" opacity="0" fill="#FFF4E2" font-size="14" font-weight="700" letter-spacing="2.5">
+          <text x="34" y="52">Nº 01</text>
+          <text x="566" y="52" text-anchor="end">EST. 2026</text>
+          <text x="34" y="730" fill="#1D2B4A">BISCUIT.STUDIO</text>
+          <text x="566" y="730" text-anchor="end" fill="#1D2B4A">FRESH DAILY</text>
+        </g>
+        <rect id="grainRect" width="600" height="750" filter="url(#grain)" opacity="0"/>
+      </g>
+
+      <!-- Editor overlays (above art, unclipped) -->
+      <g id="overlays">
+        <!-- ellipse tool bbox -->
+        <g id="ellipseUI" opacity="0">
+          <rect id="ellBox" fill="none" stroke="#2D7FF9" stroke-width="2"/>
+          <g id="ellHandles"></g>
+          <g id="ellDims">
+            <rect id="ellDimsBg" rx="6" height="28" width="118" fill="#2D7FF9"/>
+            <text id="ellDimsTx" class="sans" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">280 × 280</text>
+          </g>
+        </g>
+        <!-- pen tool -->
+        <g id="penUI">
+          <path id="pen1" d="M0 650 C160 590 360 730 600 620" fill="none" stroke="#2D7FF9" stroke-width="3"/>
+          <path id="pen2" d="M0 702 C190 662 400 770 600 690" fill="none" stroke="#2D7FF9" stroke-width="3"/>
+          <g id="penHandles"></g>
+        </g>
+        <!-- text selection -->
+        <g id="textUI" opacity="0">
+          <rect id="txBox" fill="none" stroke="#2D7FF9" stroke-width="2"/>
+          <g id="txHandles"></g>
+          <rect id="caret" width="4" height="98" fill="#2D7FF9"/>
+          <g id="trackPill" opacity="0">
+            <rect x="-86" y="-17" width="172" height="34" rx="8" fill="#2D7FF9"/>
+            <text id="trackTx" class="sans" x="0" y="6" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">Tracking  +40</text>
+          </g>
+        </g>
+        <!-- smart guides -->
+        <g id="guides" opacity="0" stroke="#FF2E93" stroke-width="2">
+          <line x1="300" y1="-30" x2="300" y2="780"/>
+          <g id="guideDist" class="sans" font-size="13" font-weight="700">
+            <line id="gdL" y1="0" y2="0"/>
+            <line id="gdR" y1="0" y2="0"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Swatch panel -->
+  <g id="swatchPanel" transform="translate(1020,170)" opacity="0">
+    <g filter="url(#uiShadow)">
+      <rect width="392" height="112" rx="20" fill="#FFFDF8"/>
+    </g>
+    <text class="sans" x="22" y="34" font-size="14" font-weight="700" letter-spacing="1.5" fill="#9A8770">SWATCHES</text>
+    <g id="swatches"></g>
+  </g>
+
+  <!-- Step indicator -->
+  <g id="steps" class="sans" transform="translate(360,972)"></g>
+
+  <!-- Confetti / sparkles -->
+  <g id="fx"></g>
+
+  <!-- Client comment -->
+  <g id="comment" opacity="0">
+    <g id="commentInner">
+      <g filter="url(#uiShadow)">
+        <path d="M0 0 h300 a18 18 0 0 1 18 18 v66 a18 18 0 0 1 -18 18 h-282 a18 18 0 0 1 -18 -18 Z" fill="#FFFDF8"/>
+      </g>
+      <circle cx="0" cy="0" r="22" fill="#7C6CF2" stroke="#FFFDF8" stroke-width="4"/>
+      <text class="sans" x="0" y="6" font-size="17" font-weight="700" fill="#fff" text-anchor="middle">C</text>
+      <text class="sans" x="34" y="36" font-size="14" font-weight="700" fill="#9A8770">Client · just now</text>
+      <text class="sans" x="34" y="72" font-size="24" font-weight="700" fill="#2A1A10">Love it. <tspan fill="#F0533A">No notes.</tspan></text>
+    </g>
+  </g>
+
+  <!-- Speech bubble -->
+  <g id="speech" opacity="0">
+    <g id="speechInner">
+      <path d="M-150 -86 h300 a24 24 0 0 1 24 24 v40 a24 24 0 0 1 -24 24 h-128 l-22 26 l-6 -26 h-144 a24 24 0 0 1 -24 -24 v-40 a24 24 0 0 1 24 -24 Z" fill="#2A1A10"/>
+      <text id="speechTx" class="sans" x="0" y="-33" font-size="27" font-weight="700" fill="#FFF4E2" text-anchor="middle">Hi, I'm Biscuit!</text>
+    </g>
+  </g>
+
+  <!-- Title card -->
+  <g id="title" transform="translate(1410,0)">
+    <g id="titleWord" class="serif" font-size="150" font-weight="900" fill="#2A1A10"></g>
+    <g id="titleSub" class="sans" opacity="0">
+      <rect x="-170" y="355" width="340" height="50" rx="25" fill="#2A1A10"/>
+      <text x="0" y="388" font-size="20" font-weight="700" letter-spacing="4" fill="#FFF4E2" text-anchor="middle">GRAPHIC DESIGNER</text>
+    </g>
+    <text id="titleTag" class="serif" x="0" y="460" font-size="27" font-style="italic" font-weight="500" fill="#7A6450" text-anchor="middle" opacity="0">Freshly baked ideas, every time.</text>
+  </g>
+
+  <!-- Biscuit character -->
+  <g id="biscuitRoot">
+    <ellipse id="bShadow" cx="0" cy="0" rx="120" ry="16" fill="#2A1A10" opacity="0.14"/>
+    <g id="bBody">
+      <!-- legs -->
+      <g stroke="#3B2416" stroke-width="15" stroke-linecap="round" fill="none">
+        <path id="legL" d="M-42 110 L-46 168"/>
+        <path id="legR" d="M42 110 L46 168"/>
+      </g>
+      <ellipse id="shoeL" cx="-52" cy="172" rx="24" ry="12" fill="#3B2416"/>
+      <ellipse id="shoeR" cx="52" cy="172" rx="24" ry="12" fill="#3B2416"/>
+      <!-- back arm (screen right) -->
+      <g id="armRG">
+        <path id="armR" d="" stroke="#3B2416" stroke-width="14" stroke-linecap="round" fill="none"/>
+        <circle id="handR" r="15" fill="#3B2416"/>
+      </g>
+      <!-- body -->
+      <g id="bTorso">
+        <path id="bEdge" fill="url(#biscuitFill)" stroke="#A8662A" stroke-width="5"/>
+        <path id="bRim" fill="none" stroke="#B87530" stroke-width="3" opacity="0.45"/>
+        <g id="bHoles" fill="#A8662A" opacity="0.75"></g>
+        <!-- face -->
+        <g id="face">
+          <ellipse cx="-64" cy="30" rx="17" ry="10" fill="#F07B6E" opacity="0.55"/>
+          <ellipse cx="64" cy="30" rx="17" ry="10" fill="#F07B6E" opacity="0.55"/>
+          <g id="eyes">
+            <g id="eyeL" transform="translate(-38,-4)">
+              <g class="eyeOpen">
+                <ellipse rx="13" ry="17" fill="#2A1A10"/>
+                <circle class="glint" cx="-3" cy="-6" r="4.6" fill="#fff"/>
+              </g>
+              <path class="eyeHappy" d="M-13 4 Q0 -14 13 4" fill="none" stroke="#2A1A10" stroke-width="6" stroke-linecap="round" opacity="0"/>
+            </g>
+            <g id="eyeR" transform="translate(38,-4)">
+              <g class="eyeOpen">
+                <ellipse rx="13" ry="17" fill="#2A1A10"/>
+                <circle class="glint" cx="-3" cy="-6" r="4.6" fill="#fff"/>
+              </g>
+              <path class="eyeHappy" d="M-13 4 Q0 -14 13 4" fill="none" stroke="#2A1A10" stroke-width="6" stroke-linecap="round" opacity="0"/>
+            </g>
+          </g>
+          <path id="brows" d="M-50 -34 Q-38 -40 -26 -34 M26 -34 Q38 -40 50 -34" fill="none" stroke="#3B2416" stroke-width="5" stroke-linecap="round" opacity="0"/>
+          <path id="mouthSmile" d="M-20 30 Q0 50 20 30" fill="none" stroke="#2A1A10" stroke-width="6" stroke-linecap="round"/>
+          <g id="mouthOpen" opacity="0">
+            <path d="M-24 26 Q0 28 24 26 Q22 62 0 62 Q-22 62 -24 26 Z" fill="#2A1A10"/>
+            <path d="M-12 52 Q0 44 12 52 Q8 60 0 60 Q-8 60 -12 52 Z" fill="#F07B6E"/>
+          </g>
+        </g>
+        <!-- beret -->
+        <g id="beret" transform="translate(14,-124) rotate(-14)">
+          <path d="M-92 6 Q-96 -40 -10 -44 Q86 -46 92 2 Q60 22 0 20 Q-60 22 -92 6 Z" fill="#D9433B"/>
+          <path d="M-88 4 Q-60 20 0 18 Q60 20 90 0" fill="none" stroke="#A82E28" stroke-width="7" stroke-linecap="round"/>
+          <path d="M-4 -44 Q2 -60 12 -62" fill="none" stroke="#D9433B" stroke-width="8" stroke-linecap="round"/>
+        </g>
+      </g>
+      <!-- front arm (screen left) holding stylus -->
+      <g id="armLG">
+        <path id="armL" d="" stroke="#3B2416" stroke-width="14" stroke-linecap="round" fill="none"/>
+        <g id="stylus">
+          <rect x="-8" y="-104" width="16" height="104" rx="8" fill="#1D2B4A"/>
+          <rect x="-8" y="-104" width="16" height="22" rx="8" fill="#F49AC1"/>
+          <path d="M-8 -6 L8 -6 L0 16 Z" fill="#1D2B4A"/>
+          <circle cx="0" cy="14" r="3" fill="#2D7FF9"/>
+        </g>
+        <circle id="handL" r="15" fill="#3B2416"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Multiplayer cursor -->
+  <g id="cursor" opacity="0">
+    <circle id="clickRing" r="0" fill="none" stroke="#FF2E93" stroke-width="3" opacity="0"/>
+    <path d="M0 0 L0 30 L8 23 L14 37 L20 34 L14 21 L25 21 Z" fill="#FF2E93" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
+    <g transform="translate(20,40)">
+      <rect width="84" height="28" rx="14" fill="#FF2E93"/>
+      <text class="sans" x="42" y="19.5" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">Biscuit</text>
+    </g>
+  </g>
+
+</svg>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = (id) => document.getElementById(id);
+  const DURATION = 15;
+
+  // ---------- easing + timing helpers ----------
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const seg = (t, a, b) => clamp((t - a) / (b - a));
+  const ease = {
+    inOut: (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
+    out: (p) => 1 - Math.pow(1 - p, 3),
+    in: (p) => p * p * p,
+    outBack: (p, s = 1.7) => 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2),
+    outElastic: (p) => (p === 0 || p === 1 ? p : Math.pow(2, -10 * p) * Math.sin((p * 10 - 0.75) * (2 * Math.PI) / 3) + 1),
+  };
+  // keyframe track: [[t, value(s)...], ...] eased between keys
+  function track(keys, t, fn = ease.inOut) {
+    if (t <= keys[0][0]) return keys[0].slice(1);
+    for (let i = 0; i < keys.length - 1; i++) {
+      const [t0, ...a] = keys[i], [t1, ...b] = keys[i + 1];
+      if (t <= t1) {
+        const p = fn(seg(t, t0, t1));
+        return a.map((v, j) => lerp(v, b[j], p));
+      }
+    }
+    return keys[keys.length - 1].slice(1);
+  }
+  const el = (tag, attrs = {}, parent) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+  const set = (n, attrs) => { for (const k in attrs) n.setAttribute(k, attrs[k]); };
+  const pop = (t, a, d = 0.35) => (t < a ? 0 : ease.outBack(seg(t, a, a + d), 2.2));
+
+  // ---------- static construction ----------
+  // Biscuit edge: fluted circle
+  function fluted(r, amp, n) {
+    let d = "";
+    const steps = 360;
+    for (let i = 0; i <= steps; i++) {
+      const a = (i / steps) * Math.PI * 2;
+      const rr = r + amp * Math.cos(a * n);
+      d += (i ? "L" : "M") + (Math.cos(a) * rr).toFixed(2) + " " + (Math.sin(a) * rr).toFixed(2);
+    }
+    return d + "Z";
+  }
+  $("bEdge").setAttribute("d", fluted(132, 5, 22));
+  $("bRim").setAttribute("d", fluted(112, 2.5, 22));
+  [[-150, 90], [-118, 92], [-90, 94], [-62, 92], [-30, 90], [150, 88], [118, 92], [90, 94], [62, 92], [30, 90], [180, 92], [0, 92],
+   [-128, 60], [-52, 60], [128, 64], [52, 64]].forEach(([deg, r]) => {
+    const a = (deg * Math.PI) / 180;
+    // keep the holes off the face (eyes/mouth live in the middle band)
+    el("circle", { cx: (Math.cos(a) * r).toFixed(1), cy: (Math.sin(a) * r).toFixed(1), r: 4.6 }, $("bHoles"));
+  });
+
+  // Swatches
+  const SW = [
+    { c: "#1D2B4A", name: "Ink" },
+    { c: "#F5B83D", name: "Butter" },
+    { c: "#2BA59B", name: "Mint" },
+    { c: "#F49AC1", name: "Icing" },
+    { c: "#F0533A", name: "Jam" },
+  ];
+  const swEls = SW.map((s, i) => {
+    const g = el("g", { transform: `translate(${44 + i * 76},72)` }, $("swatches"));
+    const ring = el("circle", { r: 29, fill: "none", stroke: "#2A1A10", "stroke-width": 3, opacity: 0 }, g);
+    const dot = el("circle", { r: 22, fill: s.c }, g);
+    return { g, ring, dot, x: 1020 + 44 + i * 76, y: 170 + 72 };
+  });
+
+  // Step indicator
+  const STEPS = ["SHAPE", "COLOR", "TYPE", "POLISH"];
+  const stepEls = STEPS.map((s, i) => {
+    const g = el("g", { transform: `translate(${i * 152},0)` }, $("steps"));
+    const bar = el("rect", { x: 0, y: 0, width: 140, height: 6, rx: 3, fill: "#E3D7C2" }, g);
+    const fill = el("rect", { x: 0, y: 0, width: 0, height: 6, rx: 3, fill: "#2A1A10" }, g);
+    const tx = el("text", { x: 0, y: 34, "font-size": 15, "font-weight": 700, "letter-spacing": 2, fill: "#B5A28A" }, g);
+    tx.textContent = `0${i + 1} ${s}`;
+    return { bar, fill, tx };
+  });
+
+  // Polish stars on the poster
+  const STARS = [[70, 130, 9], [525, 120, 12], [548, 300, 7], [84, 336, 6], [60, 236, 5], [420, 72, 5]];
+  const starEls = STARS.map(([x, y, r]) => {
+    const s = el("path", {
+      d: `M0 ${-r * 2} Q${r * 0.25} ${-r * 0.25} ${r * 2} 0 Q${r * 0.25} ${r * 0.25} 0 ${r * 2} Q${-r * 0.25} ${r * 0.25} ${-r * 2} 0 Q${-r * 0.25} ${-r * 0.25} 0 ${-r * 2}Z`,
+    }, $("stars"));
+    return { s, x, y };
+  });
+
+  // Handles helper
+  function handleSquares(parent, count) {
+    return Array.from({ length: count }, () =>
+      el("rect", { width: 12, height: 12, x: -6, y: -6, fill: "#fff", stroke: "#2D7FF9", "stroke-width": 2 }, parent));
+  }
+  const ellHandles = handleSquares($("ellHandles"), 4);
+  const txHandles = handleSquares($("txHandles"), 4);
+
+  // Pen anchors + bezier handles (for both waves)
+  const PEN = [
+    { p0: [0, 650], c1: [160, 590], c2: [360, 730], p1: [600, 620], path: $("pen1") },
+    { p0: [0, 702], c1: [190, 662], c2: [400, 770], p1: [600, 690], path: $("pen2") },
+  ];
+  PEN.forEach((pn) => {
+    const g = el("g", {}, $("penHandles"));
+    pn.g = g;
+    pn.h0 = el("line", { stroke: "#2D7FF9", "stroke-width": 1.5 }, g);
+    pn.h1 = el("line", { stroke: "#2D7FF9", "stroke-width": 1.5 }, g);
+    pn.k0 = el("circle", { r: 6, fill: "#fff", stroke: "#2D7FF9", "stroke-width": 2 }, g);
+    pn.k1 = el("circle", { r: 6, fill: "#fff", stroke: "#2D7FF9", "stroke-width": 2 }, g);
+    pn.a0 = el("rect", { width: 14, height: 14, x: -7, y: -7, fill: "#2D7FF9", stroke: "#fff", "stroke-width": 2 }, g);
+    pn.a1 = el("rect", { width: 14, height: 14, x: -7, y: -7, fill: "#fff", stroke: "#2D7FF9", "stroke-width": 2 }, g);
+    pn.len = pn.path.getTotalLength();
+    pn.path.setAttribute("stroke-dasharray", pn.len);
+  });
+  const bez = (pn, u) => {
+    const m = 1 - u;
+    const k = [m * m * m, 3 * m * m * u, 3 * m * u * u, u * u * u];
+    return [0, 1].map((j) => k[0] * pn.p0[j] + k[1] * pn.c1[j] + k[2] * pn.c2[j] + k[3] * pn.p1[j]);
+  };
+
+  // Typography: per-letter glyphs, positioned from real font metrics
+  const LINES = [
+    { text: "FRESHLY", y: 440, parent: $("line1") },
+    { text: "BAKED.", y: 548, parent: $("line2"), optical: -10 },
+  ];
+  const TITLE = { text: "Biscuit", parent: $("titleWord") };
+
+  function buildType() {
+    const measure = el("text", { class: "serif", "font-size": 112, "font-weight": 900, x: 0, y: -999 }, $("typeGroup"));
+    LINES.forEach((ln) => {
+      measure.textContent = ln.text;
+      ln.adv = [];
+      for (let i = 0; i < ln.text.length; i++) ln.adv.push(measure.getStartPositionOfChar(i).x);
+      ln.width = measure.getComputedTextLength();
+      ln.glyphs = [...ln.text].map((ch) => {
+        const g = el("g", {}, ln.parent);
+        const tx = el("text", { x: 0, y: 0 }, g);
+        tx.textContent = ch;
+        return g;
+      });
+    });
+    measure.remove();
+    const m2 = el("text", { class: "serif", "font-size": 150, "font-weight": 900, x: 0, y: -999 }, $("titleWord"));
+    m2.textContent = TITLE.text;
+    TITLE.adv = [...TITLE.text].map((_, i) => m2.getStartPositionOfChar(i).x);
+    TITLE.width = m2.getComputedTextLength();
+    TITLE.glyphs = [...TITLE.text].map((ch) => {
+      const g = el("g", {}, TITLE.parent);
+      const tx = el("text", {}, g);
+      tx.textContent = ch;
+      return g;
+    });
+    m2.remove();
+  }
+
+  // Confetti
+  const CONF_COLORS = ["#F0533A", "#F5B83D", "#2BA59B", "#F49AC1", "#1D2B4A", "#7C6CF2"];
+  let seed = 11;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const confetti = Array.from({ length: 70 }, (_, i) => {
+    const shape = i % 3;
+    const c = CONF_COLORS[i % CONF_COLORS.length];
+    const n = shape === 0 ? el("rect", { x: -7, y: -4, width: 14, height: 8, rx: 2, fill: c }, $("fx"))
+      : shape === 1 ? el("circle", { r: 5.5, fill: c }, $("fx"))
+      : el("path", { d: "M-8 0 Q-4 -6 0 0 T8 0", fill: "none", stroke: c, "stroke-width": 4, "stroke-linecap": "round" }, $("fx"));
+    const ang = -Math.PI / 2 + (rnd() - 0.5) * 2.4;
+    const sp = 520 + rnd() * 620;
+    return { n, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, spin: (rnd() - 0.5) * 900, ox: 660 + (rnd() - 0.5) * 520, oy: 600 + rnd() * 160, delay: rnd() * 0.18 };
+  });
+  // little sparkle bursts around Biscuit
+  const sparks = Array.from({ length: 8 }, (_, i) => {
+    const n = el("path", { d: "M0 -14 L3 -3 L14 0 L3 3 L0 14 L-3 3 L-14 0 L-3 -3 Z", fill: i % 2 ? "#F5B83D" : "#F0533A" }, $("fx"));
+    return { n, a: (i / 8) * Math.PI * 2 + 0.3 };
+  });
+
+  // ---------- Biscuit rig ----------
+  const BISCUIT_HOME = { x: 1410, y: 742 }; // body centre when standing
+  function arm(path, shoulder, angDeg, bendDeg, len = 92) {
+    const a = (angDeg * Math.PI) / 180, b = ((angDeg + bendDeg) * Math.PI) / 180;
+    const ex = shoulder[0] + Math.cos(a) * len * 0.55, ey = shoulder[1] + Math.sin(a) * len * 0.55;
+    const hx = ex + Math.cos(b) * len * 0.55, hy = ey + Math.sin(b) * len * 0.55;
+    path.setAttribute("d", `M${shoulder[0]} ${shoulder[1]} Q${ex.toFixed(1)} ${ey.toFixed(1)} ${hx.toFixed(1)} ${hy.toFixed(1)}`);
+    return [hx, hy];
+  }
+
+  // ---------- render ----------
+  let cursorXY = [1700, 1200];
+  function render(t) {
+    t = clamp(t, 0, DURATION);
+
+    // ===== Tool rail =====
+    // 0 move, 1 pen, 2 ellipse, 3 text, 4 fill
+    const tool = t < 2.0 ? 0 : t < 3.25 ? 2 : t < 5.0 ? 1 : t < 7.5 ? 4 : t < 10.0 ? 3 : 0;
+    // highlight springs between tools
+    const changes = [[0, 12], [2.0, 158], [3.25, 84], [5.0, 306], [7.5, 230], [10.0, 12]];
+    let hiY = 12;
+    for (let i = 0; i < changes.length; i++) {
+      const [ct, cy] = changes[i];
+      if (t >= ct) {
+        const from = i ? changes[i - 1][1] : cy;
+        hiY = lerp(from, cy, ease.outBack(seg(t, ct, ct + 0.3), 1.4));
+      }
+    }
+    $("toolHi").setAttribute("y", hiY.toFixed(1));
+    document.querySelectorAll(".tool").forEach((n) => {
+      const i = +n.dataset.i;
+      const on = i === tool;
+      if (i === 4) n.setAttribute("opacity", 1);
+      else if (n.tagName === "text") n.setAttribute("fill", on ? "#FFF4E2" : "#2A1A10");
+      else if (n.tagName === "g") n.querySelectorAll("path,circle").forEach((c) => {
+        if (c.getAttribute("fill") !== "none") c.setAttribute("fill", on ? "#FFF4E2" : "#2A1A10");
+        c.setAttribute("stroke", on ? "#FFF4E2" : "#2A1A10");
+      });
+      else if (n.getAttribute("fill") === "none") n.setAttribute("stroke", on ? "#FFF4E2" : "#2A1A10");
+      else n.setAttribute("fill", on ? "#FFF4E2" : "#2A1A10");
+    });
+    // rail + app chrome intro
+    const uiIn = ease.out(seg(t, 0.05, 0.6));
+    const uiOut = ease.inOut(seg(t, 10.0, 10.6));
+    $("toolRail").setAttribute("transform", `translate(${lerp(140, 236, uiIn) - uiOut * 200},330)`);
+    $("toolRail").setAttribute("opacity", (uiIn * (1 - uiOut)).toFixed(3));
+    $("appBar").setAttribute("transform", `translate(0,${(-70 * (1 - uiIn) - 70 * uiOut).toFixed(1)})`);
+    $("clientAvatar").setAttribute("opacity", seg(t, 10.7, 10.9).toFixed(2));
+
+    // ===== Artboard =====
+    const abIn = ease.outBack(seg(t, 0.15, 0.85), 1.2);
+    const lift = ease.inOut(seg(t, 10.1, 10.9));
+    const abS = lerp(0.9, 1, abIn) * (1 + 0.035 * lift);
+    const abRot = -1.4 * lift;
+    const abX = 360 + 300, abY = 170 + 375;
+    $("artboardWrap").setAttribute("transform",
+      `translate(${abX},${abY + (1 - abIn) * 60}) rotate(${abRot}) scale(${abS}) translate(-300,-375)`);
+    $("artboardWrap").setAttribute("opacity", seg(t, 0.15, 0.5).toFixed(3));
+    $("abLabel").setAttribute("opacity", (1 - uiOut).toFixed(3));
+    $("abGridRect").setAttribute("opacity", (1 - seg(t, 5.6, 6.0)).toFixed(3));
+    $("zoomLabel").textContent = `${Math.round(100 * abS)}%`;
+
+    // ===== SHAPE: ellipse tool (2.15 – 3.15) =====
+    const eDrag = ease.inOut(seg(t, 2.25, 3.0));
+    const ex0 = 160, ey0 = 132, side = 280 * eDrag;
+    const ellVis = seg(t, 2.2, 2.3) * (1 - seg(t, 3.15, 3.35));
+    $("ellipseUI").setAttribute("opacity", ellVis.toFixed(3));
+    set($("ellBox"), { x: ex0, y: ey0, width: side, height: side });
+    [[0, 0], [1, 0], [0, 1], [1, 1]].forEach(([i, j], k) => ellHandles[k].setAttribute("transform", `translate(${ex0 + i * side},${ey0 + j * side})`));
+    const dims = Math.round(side);
+    $("ellDimsTx").textContent = `${dims} × ${dims}`;
+    set($("ellDimsBg"), { x: ex0 + side / 2 - 59, y: ey0 + side + 14 });
+    set($("ellDimsTx"), { x: ex0 + side / 2, y: ey0 + side + 33 });
+    const sunR = t < 2.25 ? 0 : t < 3.0 ? side / 2 : 140;
+    set($("sunOutline"), { r: sunR.toFixed(1), cx: (ex0 + (t < 3.0 ? side / 2 : 140)).toFixed(1), cy: (ey0 + (t < 3.0 ? side / 2 : 140)).toFixed(1) });
+    $("sunOutline").setAttribute("stroke", t < 3.15 ? "#2D7FF9" : "#C9BBA4");
+
+    // ===== SHAPE: pen tool (3.3 – 5.0) =====
+    const penWin = [[3.3, 4.05], [4.25, 4.95]];
+    PEN.forEach((pn, i) => {
+      const [a, b] = penWin[i];
+      const p = ease.inOut(seg(t, a, b));
+      const vis = t >= a ? 1 : 0;
+      const fadeUI = 1 - seg(t, 5.0, 5.25);
+      pn.path.setAttribute("stroke-dashoffset", (pn.len * (1 - p)).toFixed(1));
+      pn.path.setAttribute("opacity", (vis * fadeUI).toFixed(3));
+      // active handles only while this curve is being drawn (+ short linger)
+      const hv = vis * (1 - seg(t, b + 0.05, b + 0.25)) * fadeUI;
+      pn.g.setAttribute("opacity", hv.toFixed(3));
+      const s0 = pop(t, a, 0.25), s1 = pop(t, a + (b - a) * 0.82, 0.25);
+      pn.a0.setAttribute("transform", `translate(${pn.p0[0]},${pn.p0[1]}) scale(${s0})`);
+      pn.a1.setAttribute("transform", `translate(${pn.p1[0]},${pn.p1[1]}) scale(${s1})`);
+      // handles stretch out as if dragged
+      const hp = ease.out(seg(t, a + 0.05, a + (b - a) * 0.6));
+      const h0 = [lerp(pn.p0[0], pn.c1[0], hp), lerp(pn.p0[1], pn.c1[1], hp)];
+      const hq = ease.out(seg(t, a + (b - a) * 0.75, b));
+      const h1 = [lerp(pn.p1[0], pn.c2[0], hq), lerp(pn.p1[1], pn.c2[1], hq)];
+      set(pn.h0, { x1: pn.p0[0], y1: pn.p0[1], x2: h0[0], y2: h0[1] });
+      set(pn.h1, { x1: pn.p1[0], y1: pn.p1[1], x2: h1[0], y2: h1[1] });
+      set(pn.k0, { cx: h0[0], cy: h0[1], opacity: hp > 0.02 ? 1 : 0 });
+      set(pn.k1, { cx: h1[0], cy: h1[1], opacity: hq > 0.02 ? 1 : 0 });
+      $(i ? "w2Outline" : "w1Outline").setAttribute("opacity", t >= b ? 1 : 0);
+    });
+    $("sunOutline").setAttribute("opacity", t < 2.25 ? 0 : 1);
+
+    // ===== COLOR (5.0 – 7.5) =====
+    const panelIn = ease.outBack(seg(t, 4.95, 5.35), 1.6);
+    const panelOut = ease.in(seg(t, 7.45, 7.75));
+    $("swatchPanel").setAttribute("opacity", (seg(t, 4.95, 5.1) * (1 - panelOut)).toFixed(3));
+    $("swatchPanel").setAttribute("transform", `translate(1020,${170 - 30 * (1 - panelIn) - 30 * panelOut})`);
+    const fills = [
+      { sw: 0, pick: 5.35, click: 5.62, at: [470, 90], clip: "floodBgC", R: 900, outline: null },
+      { sw: 1, pick: 5.92, click: 6.2, at: [300, 272], clip: "floodSunC", R: 160, outline: "sunOutline" },
+      { sw: 2, pick: 6.45, click: 6.72, at: [420, 690], clip: "floodW1C", R: 650, outline: "w1Outline" },
+      { sw: 3, pick: 6.95, click: 7.2, at: [150, 728], clip: "floodW2C", R: 650, outline: "w2Outline" },
+    ];
+    swEls.forEach((s, i) => {
+      const f = fills.find((ff) => ff.sw === i);
+      let sel = 0;
+      if (f) sel = t >= f.pick && t < f.click + 0.25 ? 1 : 0;
+      const bump = f ? 1 + 0.18 * Math.sin(Math.PI * seg(t, f.pick - 0.02, f.pick + 0.16)) : 1;
+      s.ring.setAttribute("opacity", sel);
+      s.g.setAttribute("transform", `translate(${44 + i * 76},72) scale(${(lerp(0.4, 1, ease.outBack(seg(t, 5.0 + i * 0.05, 5.3 + i * 0.05), 2.5)) * bump).toFixed(3)})`);
+    });
+    fills.forEach((f) => {
+      const p = ease.out(seg(t, f.click, f.click + 0.45));
+      set($(f.clip), { cx: f.at[0], cy: f.at[1], r: (f.R * p).toFixed(1) });
+      if (f.outline && t >= f.click + 0.1) $(f.outline).setAttribute("opacity", 0);
+    });
+
+    // ===== TYPE (7.5 – 10.0) =====
+    const track0 = 10, track1 = -2;
+    const trackP = ease.inOut(seg(t, 8.75, 9.25));
+    const spacing = lerp(track0, track1, trackP);
+    const nudge = lerp(18, 0, ease.outBack(seg(t, 9.35, 9.7), 2));
+    const typeStart = 7.62, perGlyph = 0.075;
+    let gi = 0;
+    let boxL = 1e9, boxR = -1e9;
+    LINES.forEach((ln, li) => {
+      const n = ln.text.length;
+      const total = ln.width + spacing * (n - 1);
+      const x0 = 300 - total / 2 + nudge + (ln.optical || 0);
+      boxL = Math.min(boxL, x0); boxR = Math.max(boxR, x0 + total);
+      ln.glyphs.forEach((g, i) => {
+        const at = typeStart + (gi++) * perGlyph + li * 0.05;
+        const p = seg(t, at, at + 0.32);
+        const s = t < at ? 0 : ease.outBack(p, 2.6);
+        const x = x0 + ln.adv[i] + spacing * i;
+        const dy = (1 - ease.out(p)) * -40;
+        g.setAttribute("transform", `translate(${x.toFixed(1)},${(ln.y + dy).toFixed(1)}) scale(${s.toFixed(3)})`);
+        g.setAttribute("opacity", t < at ? 0 : 1);
+      });
+    });
+    const lastGlyphT = typeStart + (gi - 1) * perGlyph + 0.05;
+    const txVis = seg(t, 7.55, 7.62) * (1 - seg(t, 9.85, 10.05));
+    $("textUI").setAttribute("opacity", txVis.toFixed(3));
+    const by0 = LINES[0].y - 98, by1 = LINES[1].y + 24;
+    set($("txBox"), { x: boxL - 14, y: by0, width: boxR - boxL + 28, height: by1 - by0 });
+    [[boxL - 14, by0], [boxR + 14, by0], [boxL - 14, by1], [boxR + 14, by1]].forEach(([x, y], k) => txHandles[k].setAttribute("transform", `translate(${x},${y})`));
+    // caret follows the last typed glyph
+    let caretX = 300, caretY = LINES[0].y - 86;
+    {
+      let k = 0;
+      for (let li = 0; li < LINES.length; li++) {
+        const ln = LINES[li];
+        const total = ln.width + spacing * (ln.text.length - 1);
+        const x0 = 300 - total / 2 + nudge + (ln.optical || 0);
+        for (let i = 0; i < ln.text.length; i++) {
+          const at = typeStart + k * perGlyph + li * 0.05;
+          if (t >= at) {
+            caretX = x0 + (i + 1 < ln.text.length ? ln.adv[i + 1] + spacing * (i + 1) : total) + 4;
+            caretY = ln.y - 86;
+          }
+          k++;
+        }
+      }
+    }
+    const caretBlink = t > lastGlyphT + 0.1 ? 0 : 1;
+    set($("caret"), { x: caretX.toFixed(1), y: caretY, opacity: caretBlink });
+    $("trackPill").setAttribute("opacity", (seg(t, 8.6, 8.72) * (1 - seg(t, 9.35, 9.5))).toFixed(3));
+    $("trackPill").setAttribute("transform", `translate(300,${by0 - 30})`);
+    $("trackTx").textContent = `Tracking  ${spacing >= 0 ? "+" : "−"}${Math.abs(Math.round(spacing))}`;
+    // smart guide when the block snaps to centre
+    const gVis = seg(t, 9.45, 9.55) * (1 - seg(t, 9.8, 9.95));
+    $("guides").setAttribute("opacity", gVis.toFixed(3));
+    $("subGroup").setAttribute("opacity", ease.out(seg(t, 9.55, 9.95)).toFixed(3));
+    $("subGroup").setAttribute("transform", `translate(0,${(1 - ease.out(seg(t, 9.55, 9.95))) * 12})`);
+
+    // ===== POLISH / REVEAL (10.0 – 12.5) =====
+    const crn = ease.out(seg(t, 10.05, 10.45));
+    $("corners").setAttribute("opacity", crn.toFixed(3));
+    $("grainRect").setAttribute("opacity", (0.16 * seg(t, 10.0, 10.4)).toFixed(3));
+    const r1 = ease.outBack(seg(t, 10.05, 10.5), 1.6), r2 = ease.outBack(seg(t, 10.15, 10.65), 1.6);
+    set($("ring1"), { r: lerp(140, 168, r1).toFixed(1), opacity: (0.9 * seg(t, 10.05, 10.2)).toFixed(3) });
+    set($("ring2"), { r: lerp(140, 196, r2).toFixed(1), opacity: (0.55 * seg(t, 10.15, 10.3)).toFixed(3) });
+    starEls.forEach((st, i) => {
+      const s = pop(t, 10.1 + i * 0.06, 0.4);
+      const tw = t > 10.6 ? 1 + 0.12 * Math.sin((t - 10.6) * 6 + i * 1.7) : 1;
+      st.s.setAttribute("transform", `translate(${st.x},${st.y}) rotate(${(t * 40 + i * 30) % 360}) scale(${(s * tw).toFixed(3)})`);
+    });
+    // confetti burst at 10.7
+    const ct0 = 10.7;
+    confetti.forEach((c) => {
+      const tt = t - ct0 - c.delay;
+      if (tt <= 0 || tt > 2.4) { c.n.setAttribute("opacity", 0); return; }
+      const x = c.ox + c.vx * tt * 0.9;
+      const y = c.oy + c.vy * tt + 0.5 * 1500 * tt * tt;
+      c.n.setAttribute("opacity", (1 - seg(tt, 1.8, 2.4)).toFixed(3));
+      c.n.setAttribute("transform", `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(c.spin * tt).toFixed(1)})`);
+    });
+    // client comment
+    const cmIn = ease.outBack(seg(t, 11.0, 11.4), 1.8);
+    const cmOut = ease.in(seg(t, 12.5, 12.8));
+    $("comment").setAttribute("opacity", (seg(t, 11.0, 11.1) * (1 - cmOut)).toFixed(3));
+    $("comment").setAttribute("transform", `translate(${905},${300}) scale(${(cmIn * (1 - 0.2 * cmOut)).toFixed(3)})`);
+
+    // ===== step indicator =====
+    const stepT = [[2.0, 5.0], [5.0, 7.5], [7.5, 10.0], [10.0, 12.5]];
+    const stepsVis = seg(t, 1.6, 2.0) * (1 - seg(t, 12.4, 12.8));
+    $("steps").setAttribute("opacity", stepsVis.toFixed(3));
+    stepEls.forEach((s, i) => {
+      const [a, b] = stepT[i];
+      const p = seg(t, a, b);
+      s.fill.setAttribute("width", (140 * p).toFixed(1));
+      s.tx.setAttribute("fill", t >= a ? "#2A1A10" : "#B5A28A");
+    });
+
+    // ===== title card (12.6 – 15) =====
+    const tw = TITLE.width;
+    TITLE.glyphs.forEach((g, i) => {
+      const at = 12.7 + i * 0.06;
+      const p = seg(t, at, at + 0.5);
+      const y = 300 + (1 - ease.outBack(p, 1.8)) * 70;
+      g.setAttribute("transform", `translate(${(-tw / 2 + TITLE.adv[i]).toFixed(1)},${y.toFixed(1)})`);
+      g.setAttribute("opacity", ease.out(seg(t, at, at + 0.2)).toFixed(3));
+    });
+    const subP = ease.outBack(seg(t, 13.2, 13.6), 1.6);
+    $("titleSub").setAttribute("opacity", seg(t, 13.2, 13.3).toFixed(3));
+    $("titleSub").setAttribute("transform", `translate(0,${(1 - subP) * 30}) `);
+    $("titleTag").setAttribute("opacity", ease.out(seg(t, 13.55, 14.0)).toFixed(3));
+
+    // ===== cursor =====
+    const CUR = [
+      [0, 1750, 1150], [1.9, 1180, 760],
+      // ellipse drag
+      [2.2, 360 + 160, 170 + 132], [2.25, 360 + 160, 170 + 132], [3.0, 360 + 440, 170 + 412],
+      // pen: follow curve handled below
+      [3.3, 360 + 0, 170 + 650], [4.05, 360 + 600, 170 + 620],
+      [4.25, 360 + 0, 170 + 702], [4.95, 360 + 600, 170 + 690],
+      // color
+      [5.3, swEls[0].x, swEls[0].y], [5.4, swEls[0].x, swEls[0].y], [5.6, 360 + 470, 170 + 90],
+      [5.68, 360 + 470, 170 + 90], [5.9, swEls[1].x, swEls[1].y], [5.98, swEls[1].x, swEls[1].y],
+      [6.18, 360 + 300, 170 + 272], [6.26, 360 + 300, 170 + 272], [6.43, swEls[2].x, swEls[2].y],
+      [6.5, swEls[2].x, swEls[2].y], [6.7, 360 + 420, 170 + 690], [6.78, 360 + 420, 170 + 690],
+      [6.93, swEls[3].x, swEls[3].y], [7.0, swEls[3].x, swEls[3].y], [7.18, 360 + 150, 170 + 728],
+      [7.3, 360 + 150, 170 + 728],
+      // type
+      [7.58, 360 + 300, 170 + 470], [8.55, 360 + 330, 170 + 500],
+      [8.75, 360 + 470, 170 + 300], [9.25, 360 + 450, 170 + 300],
+      [9.35, 360 + 480, 170 + 420], [9.7, 360 + 454, 170 + 420],
+      [10.3, 1250, 1180],
+    ];
+    let cxy = track(CUR, t);
+    // ride the pen paths
+    PEN.forEach((pn, i) => {
+      const [a, b] = penWin[i];
+      if (t >= a && t <= b) {
+        const q = bez(pn, ease.inOut(seg(t, a, b)));
+        cxy = [360 + q[0], 170 + q[1]];
+      }
+    });
+    cursorXY = cxy;
+    const curVis = seg(t, 0.9, 1.3) * (1 - seg(t, 10.0, 10.3));
+    $("cursor").setAttribute("opacity", curVis.toFixed(3));
+    $("cursor").setAttribute("transform", `translate(${cxy[0].toFixed(1)},${cxy[1].toFixed(1)})`);
+    // click ripples
+    const clicks = [2.25, 3.3, 4.25, 5.35, 5.62, 5.92, 6.2, 6.45, 6.72, 6.95, 7.2, 7.58];
+    let ring = 0, ringP = 1;
+    clicks.forEach((c) => { if (t >= c && t < c + 0.35) { ring = 1; ringP = seg(t, c, c + 0.35); } });
+    set($("clickRing"), { r: (6 + 30 * ease.out(ringP)).toFixed(1), opacity: (ring * (1 - ringP)).toFixed(3) });
+
+    // ===== Biscuit =====
+    renderBiscuit(t);
+  }
+
+  function renderBiscuit(t) {
+    // --- root position: bounce in from the right ---
+    let x = BISCUIT_HOME.x, y = BISCUIT_HOME.y;
+    let sx = 1, sy = 1, rot = 0;
+    // three hops in from off-screen right: [start, end, fromX, toX, height]
+    const hops = [[0.2, 0.55, 2160, 1760, 220], [0.55, 0.95, 1760, 1560, 150], [0.95, 1.3, 1560, BISCUIT_HOME.x, 90]];
+    if (t < 1.3) x = 2160;
+    hops.forEach(([a, b, x0, x1, h]) => {
+      const p = seg(t, a, b);
+      if (t >= a && t < b) {
+        const air = Math.sin(Math.PI * p);
+        x = lerp(x0, x1, p);
+        y = BISCUIT_HOME.y - air * h;
+        sx = 1 - 0.08 * air; sy = 1 + 0.1 * air; // stretch in the air
+        rot = -14 * air;
+      }
+      const q = seg(t, b - 0.02, b + 0.16); // squash on landing
+      if (q > 0 && q < 1) { const k = Math.sin(Math.PI * q); sx *= 1 + 0.16 * k; sy *= 1 - 0.14 * k; }
+    });
+
+    // idle breathing
+    const breathe = Math.sin(t * 4.2) * 0.012;
+    sx *= 1 - breathe; sy *= 1 + breathe;
+
+    // jump for joy (11.15 – 11.85) + double hop
+    const jumps = [[11.15, 11.6, 150], [11.62, 11.95, 70]];
+    jumps.forEach(([a, b, h]) => {
+      const p = seg(t, a, b);
+      if (p > 0 && p < 1) {
+        y -= Math.sin(Math.PI * p) * h;
+        sy *= 1 + 0.12 * Math.sin(Math.PI * p); sx *= 1 - 0.07 * Math.sin(Math.PI * p);
+        rot += 8 * Math.sin(2 * Math.PI * p);
+      }
+      const l = seg(t, b - 0.02, b + 0.14);
+      if (l > 0 && l < 1) { const s = Math.sin(Math.PI * l); sx *= 1 + 0.14 * s; sy *= 1 - 0.12 * s; }
+    });
+    // anticipation squat before jump
+    {
+      const p = seg(t, 10.95, 11.15);
+      if (p > 0 && p < 1) { const s = Math.sin(Math.PI * p); sx *= 1 + 0.1 * s; sy *= 1 - 0.1 * s; }
+    }
+
+    // "ta-da" bow toward the poster (12.85 – 13.85)
+    const bowP = Math.sin(Math.PI * seg(t, 12.85, 13.85));
+    rot -= 16 * bowP;
+    sy *= 1 - 0.05 * bowP;
+    // nod when the guide snaps
+    rot += -4 * Math.sin(Math.PI * seg(t, 9.45, 9.8));
+
+    $("biscuitRoot").setAttribute("transform", `translate(${x.toFixed(1)},0)`);
+    const lifted = BISCUIT_HOME.y - y;
+    set($("bShadow"), {
+      cx: 0, cy: (BISCUIT_HOME.y + 186).toFixed(1),
+      rx: (120 * (1 - clamp(lifted / 400, 0, 0.5))).toFixed(1),
+      opacity: (0.14 * (1 - clamp(lifted / 300, 0, 0.6))).toFixed(3),
+    });
+    // pivot at the feet so squash looks grounded
+    const pivotY = 184;
+    $("bBody").setAttribute("transform",
+      `translate(0,${(y + pivotY).toFixed(1)}) rotate(${rot.toFixed(2)}) scale(${sx.toFixed(3)},${sy.toFixed(3)}) translate(0,${-pivotY})`);
+
+    // --- look direction: pupils follow the cursor when it's out, else neutral/forward ---
+    const bx = x, byc = y;
+    let lookX = 0, lookY = 0;
+    const curVis = seg(t, 0.9, 1.3) * (1 - seg(t, 10.0, 10.3));
+    if (curVis > 0) {
+      const dx = cursorXY[0] - bx, dy = cursorXY[1] - byc;
+      const d = Math.hypot(dx, dy) || 1;
+      lookX = (dx / d) * 6 * curVis; lookY = (dy / d) * 5 * curVis;
+    }
+    if (t > 12.6) { lookX = 0; lookY = 0; }
+    document.querySelectorAll("#eyes .eyeOpen").forEach((e) => e.setAttribute("transform", `translate(${lookX.toFixed(2)},${lookY.toFixed(2)})`));
+
+    // blinks
+    const blinks = [1.75, 4.6, 8.3, 14.35];
+    let blink = 1;
+    blinks.forEach((b) => { const p = seg(t, b, b + 0.16); if (p > 0 && p < 1) blink = Math.abs(Math.cos(Math.PI * p)); });
+    // happy eyes during celebration and after bow
+    const happy = (t >= 10.95 && t < 12.3) || (t >= 13.0 && t < 13.75);
+    // wink at the end (right eye)
+    const wink = t >= 14.1 && t < 14.6;
+    ["eyeL", "eyeR"].forEach((id) => {
+      const g = $(id);
+      const open = g.querySelector(".eyeOpen"), hp = g.querySelector(".eyeHappy");
+      const isWink = wink && id === "eyeR";
+      const useHappy = happy || isWink;
+      open.setAttribute("opacity", useHappy ? 0 : 1);
+      hp.setAttribute("opacity", useHappy ? 1 : 0);
+      const baseX = id === "eyeL" ? -38 : 38;
+      g.setAttribute("transform", `translate(${baseX},-4) scale(1,${useHappy ? 1 : Math.max(0.08, blink).toFixed(3)})`);
+    });
+    // mouth: open when excited
+    const excited = (t >= 0.9 && t < 2.1) || (t >= 10.95 && t < 12.3) || (t >= 13.95 && t < 15);
+    $("mouthOpen").setAttribute("opacity", excited ? 1 : 0);
+    $("mouthSmile").setAttribute("opacity", excited ? 0 : 1);
+    // focused brows while working
+    const focus = (t >= 2.2 && t < 5.0) || (t >= 8.7 && t < 9.4);
+    $("brows").setAttribute("opacity", focus ? 1 : 0);
+
+    // beret: wobble on landings + lift during the bow
+    const beretLift = Math.sin(Math.PI * seg(t, 12.95, 13.75));
+    const wob = Math.sin(t * 9) * 3 * (1 - seg(t, 1.3, 1.9)) + 10 * Math.sin(Math.PI * seg(t, 11.55, 12.1));
+    $("beret").setAttribute("transform", `translate(${14},${(-124 - 26 * beretLift).toFixed(1)}) rotate(${(-14 + wob - 10 * beretLift).toFixed(1)})`);
+
+    // --- arms ---
+    // Left (screen-left) arm holds stylus; right (screen-right) arm gestures.
+    let aL = 150, bL = -30; // angle, bend (degrees, 0 = pointing right, 90 = down)
+    let aR = 40, bR = 30;
+    let stylusRot = -20;
+    // wave hello 0.95 – 2.0 (right arm up)
+    if (t < 2.1) {
+      const w = seg(t, 1.0, 1.25) * (1 - seg(t, 1.9, 2.1));
+      aR = lerp(40, -60, w); bR = lerp(30, -20 + 28 * Math.sin(t * 18), w);
+    }
+    // drawing 2.15 – 5.0: stylus arm raised toward the artboard, scribbling
+    {
+      const d = seg(t, 2.0, 2.25) * (1 - seg(t, 4.95, 5.2));
+      const scrib = Math.sin(t * 22) * 8;
+      aL = lerp(aL, 200 + scrib * 0.5, d); bL = lerp(bL, -10 + scrib, d);
+      stylusRot = lerp(stylusRot, -60 + scrib, d);
+      aR = lerp(aR, 55, d);
+    }
+    // colour + type 5.0 – 9.4: hand on hip, stylus arm conducting the cursor
+    {
+      const d = seg(t, 5.0, 5.25) * (1 - seg(t, 9.4, 9.6));
+      const tap = Math.max(0, Math.sin(t * 14)) * 12;
+      aL = lerp(aL, 195 - tap, d); bL = lerp(bL, 0, d); stylusRot = lerp(stylusRot, -65, d);
+      aR = lerp(aR, 20, d); bR = lerp(bR, 120, d);
+    }
+    // fist pump when the type snaps to centre (9.4 – 10.8)
+    {
+      const up = seg(t, 9.4, 9.6) * (1 - seg(t, 10.6, 10.9));
+      const pump = Math.sin(Math.PI * seg(t, 9.55, 9.85)) * 14;
+      aR = lerp(aR, -50 + pump, up); bR = lerp(bR, -10 + pump, up);
+    }
+    // celebrate 10.95 – 12.3: both arms up
+    {
+      const d = seg(t, 10.9, 11.1) * (1 - seg(t, 12.2, 12.5));
+      const flap = Math.sin(t * 16) * 10;
+      aL = lerp(aL, 230 + flap, d); bL = lerp(bL, 20, d); stylusRot = lerp(stylusRot, -10, d);
+      aR = lerp(aR, -50 - flap, d); bR = lerp(bR, -20, d);
+    }
+    // bow 12.85 – 13.85: stylus arm sweeps out toward the poster, other hand on hip
+    {
+      const d = Math.sin(Math.PI * seg(t, 12.75, 13.95));
+      aL = lerp(aL, 175, d); bL = lerp(bL, 10, d); stylusRot = lerp(stylusRot, -80, d);
+      aR = lerp(aR, 20, d); bR = lerp(bR, 120, d);
+    }
+    // end: point at the title
+    {
+      const d = seg(t, 13.95, 14.25);
+      aR = lerp(aR, -55, d); bR = lerp(bR, -15, d);
+    }
+    const hl = arm($("armL"), [-118, 18], aL, bL);
+    $("handL").setAttribute("cx", hl[0].toFixed(1)); $("handL").setAttribute("cy", hl[1].toFixed(1));
+    $("stylus").setAttribute("transform", `translate(${hl[0].toFixed(1)},${hl[1].toFixed(1)}) rotate(${stylusRot.toFixed(1)}) translate(0,24)`);
+    const hr = arm($("armR"), [118, 18], aR, bR);
+    $("handR").setAttribute("cx", hr[0].toFixed(1)); $("handR").setAttribute("cy", hr[1].toFixed(1));
+
+    // feet tap during idle
+    const tap = t > 5.2 && t < 7.4 ? Math.max(0, Math.sin(t * 14)) * 6 : 0;
+    $("shoeR").setAttribute("cy", (172 - tap).toFixed(1));
+    $("legR").setAttribute("d", `M42 110 L46 ${(168 - tap).toFixed(1)}`);
+
+    // speech bubble "Hi, I'm Biscuit!"
+    const spIn = ease.outBack(seg(t, 1.25, 1.55), 2);
+    const spOut = ease.in(seg(t, 2.35, 2.55));
+    $("speech").setAttribute("opacity", (seg(t, 1.25, 1.3) * (1 - spOut)).toFixed(3));
+    $("speech").setAttribute("transform", `translate(${x - 20},${BISCUIT_HOME.y - 220}) scale(${(spIn * (1 - 0.3 * spOut)).toFixed(3)})`);
+
+    // celebration sparkles around Biscuit
+    sparks.forEach((s, i) => {
+      const p = seg(t, 11.2 + i * 0.03, 11.9 + i * 0.03);
+      const r = 150 + 90 * ease.out(p);
+      const sc = Math.sin(Math.PI * p) * 1.2;
+      s.n.setAttribute("transform", `translate(${(x + Math.cos(s.a) * r).toFixed(1)},${(BISCUIT_HOME.y - 40 + Math.sin(s.a) * r * 0.9).toFixed(1)}) scale(${sc.toFixed(3)})`);
+      s.n.setAttribute("opacity", p > 0 && p < 1 ? 1 : 0);
+    });
+  }
+
+  // ---------- boot ----------
+  async function boot() {
+    await document.fonts.load('900 122px "Fraunces"');
+    await document.fonts.load('700 16px "Space Grotesk"');
+    await document.fonts.ready;
+    buildType();
+    window.renderAt = render;
+    window.DURATION = DURATION;
+    const params = new URLSearchParams(location.search);
+    if (params.has("capture")) {
+      document.body.classList.add("capture");
+      render(+(params.get("t") || 0));
+      window.__ready = true;
+      return;
+    }
+    const t0 = performance.now();
+    const loop = (now) => {
+      const t = ((now - t0) / 1000) % (DURATION + 1.0);
+      render(Math.min(t, DURATION));
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+    window.__ready = true;
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
