@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biscuit's Big Adventure</title>
+<style>
+  @font-face { font-family: "Fraunces"; src: url("fonts/Fraunces.woff2") format("woff2"); font-weight: 100 900; font-style: normal; }
+  @font-face { font-family: "Fraunces"; src: url("fonts/Fraunces.woff2") format("woff2"); font-weight: 100 900; font-style: italic; }
+  @font-face { font-family: "Space Grotesk"; src: url("fonts/SpaceGrotesk.woff2") format("woff2"); font-weight: 300 700; }
+  @font-face { font-family: "Caveat"; src: url("fonts/Caveat.woff2") format("woff2"); font-weight: 400 700; }
+  @font-face { font-family: "Press Start 2P"; src: url("fonts/PressStart2P.woff2") format("woff2"); }
+  @font-face { font-family: "Bangers"; src: url("fonts/Bangers.woff2") format("woff2"); }
+  html, body { margin: 0; height: 100%; background: #120e0c; }
+  body { display: grid; place-items: center; overflow: hidden; }
+  canvas { width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; display: block; }
+  body.capture canvas { width: 1920px; height: 1080px; max-width: none; max-height: none; }
+</style>
+</head>
+<body>
+<canvas id="film" width="1920" height="1080"></canvas>
+<script src="js/core.js"></script>
+<script src="js/dog.js"></script>
+<script src="js/styles.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

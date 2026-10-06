@@ -1,2 +1,3 @@
-node_modules/
-biscuit-animation/out/
+node_modules
+biscuit-adventure/out/
+biscuit-adventure/soundtrack.wav
