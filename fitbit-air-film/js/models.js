@@ -293,6 +293,13 @@ export function makeBand(key, { ry = 2.15, rz = 2.85, width = 1.82, thick = 0.2 
   seat.position.set(0, ry - thick / 2 - POD.top - 0.02, 0);
   seat.rotation.y = -Math.PI / 2; // LED edge faces the band's +X side
   group.add(seat);
+  // cradle lip: a thin collar of band material that the pod snaps into, stopping just below the LED
+  const ol = (A, B) => Array.from({ length: 96 }, (_, k) => { const u = (k / 96) * TAU; return new THREE.Vector2(A * sgnPow(Math.cos(u), 2 / 2.8), B * sgnPow(Math.sin(u), 2 / 2.8)); });
+  const lipShape = new THREE.Shape(ol(POD.a + 0.08, POD.b + 0.07));
+  lipShape.holes.push(new THREE.Path(ol(POD.a + 0.005, POD.b + 0.005)));
+  const lipGeo = new THREE.ExtrudeGeometry(lipShape, { depth: 0.28, bevelEnabled: false, curveSegments: 4 });
+  lipGeo.rotateX(-Math.PI / 2); lipGeo.translate(0, -0.30, 0);
+  seat.add(new THREE.Mesh(lipGeo, mat));
   return { group, band, seat, mat, spec };
 }
 
@@ -304,7 +311,7 @@ export function makeCharger() {
   g.add(head);
   const relief = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.13, 0.7, 24), white);
   relief.rotation.z = Math.PI / 2; relief.position.x = 1.85; g.add(relief);
-  const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(1.55, 0, 0), new THREE.Vector3(3.2, -0.2, 0), new THREE.Vector3(5.5, -1.5, 0.8), new THREE.Vector3(8, -3.5, 2.5), new THREE.Vector3(11, -6, 4)]);
+  const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(1.55, 0, 0), new THREE.Vector3(2.3, 0, 0), new THREE.Vector3(3.4, -0.25, 0.05), new THREE.Vector3(5.5, -1.5, 0.8), new THREE.Vector3(8, -3.5, 2.5), new THREE.Vector3(11, -6, 4)]);
   g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 120, 0.11, 16, false), white));
   const pinMat = new THREE.MeshStandardMaterial({ color: '#C9A45C', metalness: 1, roughness: 0.3 });
   [-1.05, 1.05].forEach((x) => { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.03, 20), pinMat); p.position.set(x, 0.42, 0); g.add(p); });

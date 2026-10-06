@@ -98,7 +98,7 @@ function shotHero(ctx) {
     start: 4, end: 8, scene: s, camera: cam,
     update(τ) {
       const p = ease.sine(seg(τ, 0, 4));
-      orbit(cam, { r: lerp(6.2, 9.6, p), az: deg(lerp(75, 40, p)), el: deg(lerp(2, 14, p)), target: [0, lerp(-0.62, -0.75, p), 0] });
+      orbit(cam, { r: lerp(6.2, 9.6, p), az: deg(lerp(75, 40, p)), el: deg(lerp(2, 14, p)), target: [0, lerp(-0.3, -0.75, p), 0] });
       s.environmentRotation.set(0, lerp(-1.5, 1.3, ease.inOut(seg(τ, 0, 2.2))), 0);
       pod.group.rotation.y = lerp(0.25, -0.15, τ / 4);
       pod.group.position.y = 0.05 * Math.sin(τ * 1.6);
@@ -117,7 +117,7 @@ function shotScale(ctx) {
     start: 8, end: 12, scene: s, camera: cam,
     update(τ) {
       const p = ease.inOut(seg(τ, 1.4, 2.4));
-      orbit(cam, { r: 17, az: 0, el: deg(lerp(89.5, 6, p)), target: [lerp(-1.0, -0.85, p), 0, lerp(-0.3, 0, p)], fov: 14 });
+      orbit(cam, { r: 17, az: 0, el: deg(lerp(89.5, 6, p)), target: [lerp(-1.0, -0.85, p), lerp(0, 0.25, p), lerp(-0.3, 0, p)], fov: 14 });
       sh.material.opacity = lerp(0.1, 1, p);
     },
     ui(u, τ) {
@@ -138,7 +138,7 @@ function shotScale(ctx) {
       };
       line(P(-POD.a, 0, POD.b + 0.35), P(POD.a, 0, POD.b + 0.35), '34.9 mm', 0.5, 1.5, -1);
       line(P(POD.a + 0.35, 0, -POD.b), P(POD.a + 0.35, 0, POD.b), '17 mm', 1.0, 1.5, 1);
-      line(P(-POD.a - 0.45, -POD.bottom, 0), P(-POD.a - 0.45, POD.top, 0), '8.3 mm', 2.5, null, -1);
+      line(P(-POD.a - 0.45, -POD.bottom, 0), P(-POD.a - 0.45, POD.top, 0), '8.3 mm', 2.5, null, -1.45);
       u.headline('5.2 grams.', { x: 160, y: 300, size: 150, color: DARK, t: τ, at: 0.35, out: 3.95 });
       u.text('Google’s smallest, lightest tracker yet.', { x: 166, y: 380, size: 34, color: GREY_L, t: τ, at: 1.0, out: 3.95 });
       u.text('12 g with the band. Half the size of Inspire 3.*', { x: 166, y: 428, size: 34, color: GREY_L, t: τ, at: 2.6, out: 3.95 });
@@ -187,7 +187,7 @@ function shotInside(ctx) {
 // ---------------------------------------------------------------- 5. Sensors light up, dive in (16-20)
 function gradientAlpha() {
   const c = makeCanvas(4, 256), g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 256);
-  gr.addColorStop(0, '#000'); gr.addColorStop(0.4, '#000'); gr.addColorStop(1, '#fff');
+  gr.addColorStop(0, '#fff'); gr.addColorStop(0.6, '#000'); gr.addColorStop(1, '#000');
   g.fillStyle = gr; g.fillRect(0, 0, 4, 256); return new THREE.CanvasTexture(c);
 }
 function shotSensors(ctx) {
@@ -212,6 +212,7 @@ function shotSensors(ctx) {
       const dive = ease.inOut(seg(τ, 2.3, 3.8));
       const tgt = new THREE.Vector3(0, POD.bottom - 0.35, 0).lerp(new THREE.Vector3(0.12, POD.bottom, 0), dive);
       orbit(cam, { r: lerp(10.8, 0.7, dive), az: deg(lerp(24, 6, seg(τ, 0, 4))), el: deg(lerp(52, 88, ease.inOut(seg(τ, 0, 3.8)))), target: [tgt.x, tgt.y, tgt.z], fov: lerp(16, 55, dive) });
+      cam.setViewOffset(W, H, 0, 130 * (1 - dive), W, H);
       s.environmentRotation.set(0, lerp(-0.8, 0.9, ease.inOut(seg(τ, 0, 1.2))), 0);
       const on = { hr: ease.out(seg(τ, 0.4, 0.6)), red: ease.out(seg(τ, 0.6, 0.8)), ir: ease.out(seg(τ, 0.8, 1.0)) };
       pod.setEmit('hr', on.hr); pod.setEmit('red', on.red); pod.setEmit('ir', on.ir); pod.setEmit('det', 0);
@@ -242,7 +243,6 @@ function shotRhythm() {
     start: 20, end: 22, scene: s, camera: cam,
     update() {},
     ui(u, τ) {
-      u.fill('#C9FFE9', 0.85 * (1 - ease.out(seg(τ, 0, 0.45))));
       const g = u.g, y0 = 720, x0 = 160, x1 = 1760, period = 200, A = 170;
       const scan = lerp(x0, x1 + 40, seg(τ, 0.15, 1.85));
       g.save();
@@ -269,6 +269,7 @@ function shotRhythm() {
       g.fillStyle = fg; g.fillRect(scan - 142, top, 146, hgt);
       g.fillStyle = 'rgba(200,255,235,0.9)'; g.fillRect(scan - 1, top + hgt * 0.2, 2, hgt * 0.6);
       g.restore();
+      u.fill('#C9FFE9', 0.85 * (1 - ease.out(seg(τ, 0, 0.45))));
       lockTop(u, τ, 'Rhythm, checked quietly.', 'Background AFib alerts in the Google Health app.*', { at: 0.05, subAt: 0.4, out: 1.97, align: 'center' });
       u.footnote('*Irregular rhythm notifications are not available in all regions. Not a diagnosis.', { t: τ, at: 0.5, out: 1.97 });
     },
@@ -409,6 +410,7 @@ function shotSleep() {
   return {
     start: 30, end: 34, scene: s, camera: cam,
     update(τ) {
+      const mk = 1 - seg(τ, 0.6, 1.4); moon.material.opacity = 0.35 * mk; moonCore.material.opacity = mk;
       st.points.scale.setScalar(1 + 0.012 * Math.sin(τ * TAU * 0.5));
       for (let i = 0; i < N; i++) {
         const p = ease.inOut(seg(τ, (i / N) * 0.6, 1.0 + (i / N) * 0.6));
@@ -478,9 +480,9 @@ function shotWake(ctx) {
       rings.forEach((m, i) => {
         const p = seg(τ, wakeAt[i], wakeAt[i] + 0.9);
         const stop = τ > 2.7 ? 1 - seg(τ, 2.7, 2.9) : 1;
-        m.material.opacity = (p > 0 && p < 1 ? (1 - p) * 0.3 : 0) * stop;
-        m.scale.setScalar(lerp(3.2, 5.5, ease.out(p)));
-        m.position.set(0, -1.9, 0);
+        m.material.opacity = (p > 0 && p < 1 ? (1 - p) * 0.4 : 0) * stop;
+        m.scale.setScalar(lerp(2.4, 3.4, ease.out(p)));
+        m.position.set(0, -1.2, 0);
       });
     },
     ui(u, τ) {
@@ -501,8 +503,8 @@ function shotWake(ctx) {
       }
       const tap = toScreen(new THREE.Vector3(0, 2.35, 0), this.camera);
       rings2D(u, tap, τ, [2.75, 3.0], { color: '29,29,31', max: 90 });
-      u.text('Double-tap to stop.', { x: 1420, y: 228, size: 26, align: 'center', color: GREY_L, t: τ, at: 2.8, out: 3.95 });
-      lockBottom(u, τ, 'A quieter way to wake.', 'Smart Wake vibrates in lighter sleep, up to 30 minutes before your alarm.', { at: 0.2, subAt: 0.8, color: ink, subColor: d > 0.5 ? GREY_L : GREY_D });
+      u.text('Double-tap to stop.', { x: 1420, y: 228, size: 26, align: 'center', color: DARK, t: τ, at: 2.8, out: 3.95 });
+      lockBottom(u, τ, 'A quieter way to wake.', 'Smart Wake vibrates in lighter sleep, up to 30 minutes before your alarm.', { at: 0.2, subAt: 0.8, color: DARK, subColor: GREY_L });
     },
   };
 }
@@ -563,7 +565,7 @@ function shotCoach(ctx) {
           lines.forEach((l, i) => g.fillText(l, bx + 28, y + (1 - p) * 18 + 46 + i * 38));
         };
         bubble('Slept badly. Run today?', 1.9, 0.3, true, py + 96);
-        bubble('Readiness is low today. Try an easy 30-minute run instead.', 2.2, 0.6, false, py + 196);
+        bubble('Readiness is lower than usual. Try an easy 30-minute run instead.', 2.2, 0.6, false, py + 196);
         g.restore();
       }
       lockBottom(u, τ, 'Your data, in conversation.', 'Google Health Coach, built with Gemini. With Premium.*', { at: 1.85, subAt: 2.2, out: 3.97 });
@@ -680,7 +682,7 @@ function shotSevenDays(ctx) {
   const rainGeo = new THREE.BufferGeometry(); rainGeo.setAttribute('position', new THREE.BufferAttribute(rp, 3));
   const rain = new THREE.LineSegments(rainGeo, new THREE.LineBasicMaterial({ color: '#dfe9ff', transparent: true, opacity: 0 })); s.add(rain);
   const rainBase = rp.slice();
-  const water = new THREE.Mesh(new THREE.BoxGeometry(60, 30, 40), new THREE.MeshPhysicalMaterial({ color: '#1B6E8C', roughness: 0.15, transparent: true, opacity: 0.55, depthWrite: false, side: THREE.DoubleSide }));
+  const water = new THREE.Mesh(new THREE.BoxGeometry(60, 30, 40), new THREE.MeshBasicMaterial({ color: '#1B6E8C', transparent: true, opacity: 0.55, depthWrite: false, side: THREE.DoubleSide }));
   s.add(water);
   const bubbles = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(Array.from({ length: 600 }, (_, i) => [(hash(i) - 0.5) * 10, hash(i + 9) * 8 - 3, (hash(i + 3) - 0.5) * 6][i % 3])), 3)), new THREE.PointsMaterial({ color: '#d8f3ff', size: 0.14, transparent: true, opacity: 0 }));
   s.add(bubbles);
@@ -722,8 +724,10 @@ function shotSevenDays(ctx) {
       g.fillStyle = '#ffffff'; g.font = '600 34px "Inter Tight"'; g.textAlign = 'center'; g.fillText(`Day ${day}`, cx, cy + 12);
       g.restore();
       if (τ > 1.9 && τ < 2.75) u.text('50 m', { x: 160, y: 300, size: 150, weight: 600, font: '"Inter Tight"', color: 'rgba(255,255,255,0.95)', t: τ, at: 1.95, out: 2.75 });
-      u.text('Low battery? It tells you in red.', { x: 1640, y: 320, size: 24, weight: 500, align: 'center', color: '#ffffff', t: τ, at: 3.2, out: 3.97 });
-      scrim(u, 700, H, 0, 0.55);
+      const lb = ease.expo(seg(τ, 3.2, 3.8)) * (1 - seg(τ, 3.67, 3.97));
+      if (lb > 0) { g.save(); g.globalAlpha = lb; g.fillStyle = 'rgba(0,0,0,0.45)'; g.beginPath(); g.roundRect(1162, 184, 384, 40, 20); g.fill(); g.restore(); }
+      u.text('Low battery? It tells you in red.', { x: 1530, y: 212, size: 24, weight: 500, align: 'right', color: '#ffffff', t: τ, at: 3.2, out: 3.97 });
+      scrim(u, 640, 820, 0, 0.5); scrim(u, 820, H, 0.5, 0.6);
       lockBottom(u, τ, 'Up to 7 days per charge.', 'Water resistant to 50 m. Shower, swim, sleep, repeat.', { at: 0.1, subAt: 0.6, out: 3.97, subColor: 'rgba(245,245,247,0.82)' });
     },
   };
@@ -775,7 +779,7 @@ function shotBands(ctx) {
   const extras = ['activeLav', 'porcelain'].map((k) => { const b = makeBand(k); s.add(b.group); return b; });
   const pod = makePod(); s.add(pod.group);
   const sh = contactShadow(9, 0.22); sh.position.y = -3.0; s.add(sh);
-  const fan = [-6.6, -3.96, -1.32, 1.32, 3.96, 6.6];
+  const fan = [-6.6, -3.96, -1.32, 1.32, 4.3, 7.4];
   const all = loops.concat(extras);
   const seatQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -Math.PI / 2, 0));
   return {
