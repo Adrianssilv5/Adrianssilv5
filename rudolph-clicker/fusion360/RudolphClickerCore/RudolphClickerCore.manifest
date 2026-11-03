@@ -1,0 +1,10 @@
+{
+	"autodeskProduct": "Fusion360",
+	"type": "script",
+	"author": "Adrian Silvestre",
+	"description": {
+		"": "Builds a parametric MX-switch clicker core and nose keycap for the Rudolph fidget clicker."
+	},
+	"supportedOS": "windows|mac",
+	"editEnabled": true
+}
