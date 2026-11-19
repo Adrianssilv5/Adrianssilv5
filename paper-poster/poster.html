@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paper Bin Poster</title>
+<style>
+  :root { --ground: #ece5d8; --gap: 14px; --pad: 40px; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: var(--ground); }
+  .poster {
+    width: 1200px; height: 1600px; padding: var(--pad);
+    display: grid; gap: var(--gap);
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    grid-template-rows: repeat(6, minmax(0,1fr));
+    grid-template-areas:
+      "news  news  box   bag"
+      "news  news  box   bag"
+      "crum  shred shred env"
+      "books books eggs  tube"
+      "books books cards tube"
+      "sheet corr  ream  ream";
+    background: var(--ground);
+  }
+  .poster img { width: 100%; height: 100%; object-fit: cover; display: block; min-width: 0; min-height: 0; border-radius: 4px; background: #d9d0c0; }
+</style>
+</head>
+<body>
+<main class="poster">
+  <img style="grid-area:news"  src="img/f64891665.jpg"  alt="Thick stack of folded old newspapers">
+  <img style="grid-area:box"   src="img/f138536950.jpg" alt="Open brown cardboard shipping box">
+  <img style="grid-area:bag"   src="img/f160608132.jpg" alt="Brown paper bag folded shut">
+  <img style="grid-area:crum"  src="img/f37312310.jpg"  alt="Crumpled sheet of white paper">
+  <img style="grid-area:shred" src="img/f10200141.jpg"  alt="Pile of shredded paper strips">
+  <img style="grid-area:env"   src="img/f3807019.jpg"   alt="Opened white envelope">
+  <img style="grid-area:books" src="img/f37312526.jpg"  alt="Open lined notebook">
+  <img style="grid-area:eggs"  src="img/f15059063.jpg"  alt="Stack of grey paper-pulp egg cartons">
+  <img style="grid-area:cards" src="img/f27593847.jpg"  alt="Rows of coloured card and envelopes">
+  <img style="grid-area:tube"  src="img/f120179030.jpg" alt="Kraft paper packaging and flattened boxes">
+  <img style="grid-area:sheet" src="img/f61807252.jpg"  alt="Loose sheets of white paper">
+  <img style="grid-area:corr"  src="img/f6534720.jpg"   alt="Torn edge of corrugated cardboard">
+  <img style="grid-area:ream"  src="img/f92593181.jpg"  alt="Stack of office paper with a pen">
+</main>
+</body>
+</html>
