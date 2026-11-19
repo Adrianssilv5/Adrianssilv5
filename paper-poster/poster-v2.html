@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paper Bin Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mona+Sans:wdth,wght@75..125,400..800&display=swap">
+<style>
+  /* deal: palette steel-orange (stone ground, orange accent = cardboard), type mona, radius soft */
+  :root {
+    --bg: #eeeeeb; --surface: #ffffff; --line: #e1e1dd; --ink: #1c1d1f; --muted: #5b5d61;
+    --accent: #c2501b; --accent-soft: #f6e3d8;
+    --kraft: #d9ab72; --kraft-dark: #b98146; --paper: #ffffff; --grey: #cfcfca;
+    --pad: 56px; --gap: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: var(--bg); }
+  body { font-family: "Mona Sans", system-ui, sans-serif; color: var(--ink); }
+  .poster { width: 1200px; height: 1600px; padding: var(--pad); display: flex; flex-direction: column; gap: 30px; background: var(--bg); }
+
+  header { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; }
+  .eyebrow { font-size: 17px; font-weight: 500; letter-spacing: .02em; color: var(--accent); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .eyebrow svg { width: 26px; height: 26px; }
+  h1 { font-size: 96px; line-height: .95; font-weight: 700; font-stretch: 112%; letter-spacing: -0.04em; }
+  .lede { font-size: 22px; line-height: 1.35; color: var(--muted); max-width: 300px; text-align: right; }
+  .lede b { color: var(--ink); font-weight: 600; }
+
+  .photos { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: var(--gap); height: 300px; grid-template-rows: minmax(0,1fr); }
+  .photos img { width: 100%; height: 100%; min-height: 0; object-fit: cover; border-radius: 10px; display: block; min-width: 0; }
+
+  h2 { font-size: 30px; font-weight: 650; font-stretch: 108%; letter-spacing: -0.02em; display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  h2 .tag { font-size: 15px; font-weight: 600; letter-spacing: .01em; padding: 6px 12px; border-radius: 999px; }
+  .yes .tag { background: var(--ink); color: var(--bg); }
+  .no .tag { background: var(--accent); color: #fff; }
+
+  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--gap); }
+  .item { background: var(--surface); border-radius: 10px; padding: 14px 12px 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .item svg { width: 168px; height: 168px; }
+  .item span { font-size: 17px; font-weight: 500; text-align: center; line-height: 1.2; }
+
+  .no .grid { grid-template-columns: repeat(4, 1fr); }
+  .no .item { background: var(--accent-soft); flex-direction: row; justify-content: flex-start; gap: 14px; padding: 16px 14px; position: relative; min-height: 150px; align-items: center; }
+  .no .item svg { width: 92px; height: 92px; flex: none; }
+  .no .item span { text-align: left; flex: 1; font-size: 18px; }
+  .no .item small { font-size: 14px; }
+  .no .item small { display: block; font-size: 14px; color: var(--muted); font-weight: 400; margin-top: 4px; }
+  .x { position: absolute; top: 12px; left: 12px; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; }
+  .x svg { width: 12px !important; height: 12px !important; }
+
+  footer { margin-top: auto; display: flex; justify-content: space-between; align-items: end; font-size: 11px; color: var(--muted); gap: 24px; }
+  footer p:first-child { font-size: 20px; font-weight: 600; color: var(--ink); }
+
+  /* drawing style */
+  .d { fill: none; stroke: var(--ink); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+  .d .k { fill: var(--kraft); } .d .kd { fill: var(--kraft-dark); } .d .w { fill: var(--paper); }
+  .d .g { fill: var(--grey); } .d .a { fill: var(--accent); } .d .t { stroke-width: 3.5; }
+  .d .n { fill: none; }
+</style>
+</head>
+<body>
+<main class="poster">
+  <header>
+    <div>
+      <p class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 19H4.8a1.8 1.8 0 0 1-1.6-2.7L5.4 12.5"/><path d="M11 19h8.2a1.8 1.8 0 0 0 1.6-2.7l-1.2-2"/><path d="M14 16l-3 3 3 3"/><path d="M8.3 7.4 9.6 5.1a1.8 1.8 0 0 1 3.1 0l3.7 6.3"/><path d="M13 11.9l3.5.6.6-3.5"/><path d="M3.6 12.6l1.8-3.1 3.5.9"/></svg>Paper and card recycling</p>
+      <h1>What goes in<br>the paper bin</h1>
+    </div>
+    <p class="lede"><b>Clean, dry paper and card only.</b> Flatten every box before it goes in.</p>
+  </header>
+
+  <section class="photos" aria-label="Photographs of paper waste">
+    <img src="img/f64891665.jpg" alt="Stack of folded newspapers">
+    <img src="img/f138536950.jpg" alt="Open cardboard box">
+    <img src="img/f10200141.jpg" alt="Shredded paper">
+    <img src="img/f15059063.jpg" alt="Stacked egg cartons">
+  </section>
+
+  <section class="yes">
+    <h2>Put these in <span class="tag">Yes</span></h2>
+    <div class="grid">
+      <!-- newspaper -->
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="w" d="M38 40h112l12 12v108H38z"/><path class="g" d="M150 40v12h12z"/>
+        <path class="a" d="M54 58h90v14H54z" style="stroke:none"/>
+        <path class="t" d="M54 88h40M54 100h40M54 112h40M54 124h40M54 136h40M106 88h40M106 100h40M106 112h40"/>
+        <path class="g t" d="M106 122h40v22h-40z"/></svg><span>Newspapers</span></div>
+      <!-- cardboard box -->
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="kd" d="M40 82l60-26 60 26-60 26z"/>
+        <path class="k" d="M40 82v62l60 26v-62z"/><path class="k" d="M160 82v62l-60 26v-62z"/>
+        <path class="k" d="M40 82l-18 22 60 26 18-22z"/><path class="k" d="M160 82l18 22-60 26-18-22z"/>
+        <path class="t" d="M118 148l24-10"/></svg><span>Cardboard boxes</span></div>
+      <!-- paper bag -->
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="k" d="M56 62h70l6 108H50z"/><path class="kd" d="M126 62l24 10 4 98h-22z"/>
+        <path class="t" d="M56 62l8-18h60l2 18M126 62l8-14 16 24"/>
+        <path class="t" d="M76 84c0 14 30 14 30 0"/></svg><span>Paper bags</span></div>
+      <!-- envelope -->
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="w" d="M30 58h140v90H30z"/><path class="g" d="M30 58l70 52 70-52z"/>
+        <path class="t" d="M30 148l52-40M170 148l-52-40"/>
+        <path class="a" d="M136 70h22v26h-22z" style="stroke-width:3.5"/></svg><span>Envelopes and mail</span></div>
+      <!-- cereal box -->
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="a" d="M58 40h66v130H58z"/><path class="kd" d="M124 40l22-10v130l-22 10z"/><path class="k" d="M58 40l22-10h66l-22 10z"/>
+        <path class="w t" d="M68 112h46c0 22-10 32-23 32s-23-10-23-32z"/>
+        <path class="w t" d="M74 108a6 6 0 1 1 12 0M88 104a6 6 0 1 1 12 0M100 108a6 6 0 1 1 12 0"/>
+        <path class="w t" d="M68 56h46v22H68z"/></svg><span>Cereal and food boxes</span></div>
+      <!-- egg carton -->
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="g" d="M24 98h152l-10 46H34z"/>
+        <path class="g" d="M24 98l14-36h124l14 36z"/>
+        <path class="t" d="M50 98c0-18 30-18 30 0M85 98c0-18 30-18 30 0M120 98c0-18 30-18 30 0"/>
+        <path class="t" d="M64 112v26M100 112v26M136 112v26"/></svg><span>Egg cartons</span></div>
+      <!-- magazine -->
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="w" d="M70 34l84 14-18 124-84-14z" transform="rotate(4 100 100)"/>
+        <path class="a" d="M48 40h88v126H48z"/>
+        <path class="w t" d="M60 54h64v10H60z"/>
+        <circle class="w t" cx="92" cy="112" r="28"/><path class="t" d="M60 150h40"/></svg><span>Magazines and flyers</span></div>
+      <!-- notebook / office paper -->
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="w" d="M58 36h104v132H58z"/><path class="w" d="M46 44h104v132H46z"/>
+        <path class="t" d="M62 78h72M62 94h72M62 110h72M62 126h72M62 142h52" style="stroke:#7aa0c8"/>
+        <path class="t" d="M74 60v104" style="stroke:var(--accent)"/></svg><span>Office paper and notebooks</span></div>
+      <!-- tube -->
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="k" d="M66 44h68v116H66z"/><ellipse class="kd" cx="100" cy="44" rx="34" ry="12"/>
+        <path class="k" d="M66 160c0 7 15 12 34 12s34-5 34-12"/>
+        <ellipse class="n" cx="100" cy="44" rx="20" ry="6"/>
+        <path class="t" d="M66 78l68 30M66 124l68 30"/></svg><span>Toilet and kitchen roll tubes</span></div>
+      <!-- crumpled paper -->
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="w" d="M60 62l38-24 44 14 22 40-12 44-40 22-44-12-24-36z"/>
+        <path class="t" d="M98 38l-6 40 50-26M92 78l-48 2M92 78l22 32 50-18M114 110l-2 56M114 110l-46 34M68 144l-24-64"/></svg><span>Scrap and shredded paper</span></div>
+    </div>
+  </section>
+
+  <section class="no">
+    <h2>Keep these out <span class="tag">No</span></h2>
+    <div class="grid">
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="k" d="M24 96l76-30 76 30-76 30z"/><path class="kd" d="M24 96v26l76 30v-26z"/><path class="k" d="M176 96v26l-76 30v-26z"/>
+        <ellipse cx="82" cy="94" rx="14" ry="7" style="fill:#8a5a2b;stroke:none;opacity:.8"/><ellipse cx="118" cy="104" rx="10" ry="5" style="fill:#8a5a2b;stroke:none;opacity:.8"/></svg>
+        <span>Greasy pizza boxes<small>Food and oil spoil the batch</small></span>
+        <i class="x"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></i></div>
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="w" d="M58 62h84l-12 110H70z"/><path class="g" d="M50 46h100v16H50z"/>
+        <path class="a" d="M64 100h72l-3 32H67z"/></svg>
+        <span>Coffee cups<small>Plastic lining inside</small></span>
+        <i class="x"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></i></div>
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="w" d="M56 70c10-24 28-10 44-26 16 16 34 2 44 26 10 22-6 30 0 52 8 26-24 38-44 30-20 8-52-4-44-30 6-22-10-30 0-52z"/>
+        <path class="t" d="M80 84c8 10 32 10 40 0M78 120c12 8 32 8 44 0"/></svg>
+        <span>Used tissues<small>Paper towels too</small></span>
+        <i class="x"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></i></div>
+      <div class="item"><svg class="d" viewBox="0 0 200 200" aria-hidden="true">
+        <path class="w" d="M66 30h68v138l-11-8-11 8-12-8-12 8-11-8-11 8z"/>
+        <path class="t" d="M80 52h40M80 70h40M80 88h28M80 110h40M80 128h40" style="stroke:var(--muted)"/></svg>
+        <span>Till receipts<small>Shiny thermal paper</small></span>
+        <i class="x"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></i></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Not sure? Put it in the general bin.</p>
+    <p>Photographs via Wikimedia Commons: African Studies Centre Leiden, MrBeastRapper, Mike Haw, Edward Betts (CC BY / CC BY-SA / PD)</p>
+  </footer>
+</main>
+</body>
+</html>
